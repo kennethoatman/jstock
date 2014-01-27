@@ -223,8 +223,7 @@ public class GoogleStockServer implements StockServer {
                 // No buy volume information for Google Finance.
                 // No sell price information for Google Finance.
                 // No sell volume information for Google Finance.                    
-                final Stock stock = new Stock.Builder(code, Symbol.newInstance(name))
-                        .name(name)
+                final Stock stock = new Stock.Builder(code)
                         .changePrice(c)
                         .lastPrice(l)
                         .prevPrice(p)
@@ -246,7 +245,7 @@ public class GoogleStockServer implements StockServer {
 
             for (Code code : codes) {
                 if (currCodes.contains(code) == false) {
-                    emptyStocks.add(org.yccheok.jstock.gui.Utils.getEmptyStock(code, Symbol.newInstance(code.toString())));
+                    emptyStocks.add(org.yccheok.jstock.gui.Utils.getEmptyStock(code));
                 }
             }
 

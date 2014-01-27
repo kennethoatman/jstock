@@ -173,7 +173,6 @@ public class Statement {
         List<String> strings = new ArrayList<String>();
         if (type == Type.RealtimeInfo) {
             strings.add(guiBundleWrapper.getString("MainFrame_Code"));
-            strings.add(guiBundleWrapper.getString("MainFrame_Symbol"));
             strings.add(guiBundleWrapper.getString("MainFrame_Prev"));
             strings.add(guiBundleWrapper.getString("MainFrame_Open"));
             strings.add(guiBundleWrapper.getString("MainFrame_Last"));
@@ -191,7 +190,6 @@ public class Statement {
             strings.add(guiBundleWrapper.getString("MainFrame_RiseAbove"));
         } else if (type == Type.PortfolioManagementBuy) {
             strings.add(guiBundleWrapper.getString("MainFrame_Code"));
-            strings.add(guiBundleWrapper.getString("MainFrame_Symbol"));
             strings.add(guiBundleWrapper.getString("PortfolioManagementJPanel_Date"));
             strings.add(guiBundleWrapper.getString("PortfolioManagementJPanel_Units"));
             strings.add(guiBundleWrapper.getString("PortfolioManagementJPanel_PurchasePrice"));
@@ -210,7 +208,6 @@ public class Statement {
             strings.add(guiBundleWrapper.getString("PortfolioManagementJPanel_Comment"));            
         } else if (type == Type.PortfolioManagementSell) {
             strings.add(guiBundleWrapper.getString("MainFrame_Code"));
-            strings.add(guiBundleWrapper.getString("MainFrame_Symbol"));
             strings.add(guiBundleWrapper.getString("PortfolioManagementJPanel_ReferenceDate"));
             strings.add(guiBundleWrapper.getString("PortfolioManagementJPanel_Date"));
             strings.add(guiBundleWrapper.getString("PortfolioManagementJPanel_Units"));
@@ -237,14 +234,12 @@ public class Statement {
             strings.add(guiBundleWrapper.getString("PortfolioManagementJPanel_Comment"));
         } else if (type == Type.PortfolioManagementDividend) {
             strings.add(guiBundleWrapper.getString("PortfolioManagementJPanel_Date"));
-            strings.add(guiBundleWrapper.getString("MainFrame_Code"));           
-            strings.add(guiBundleWrapper.getString("MainFrame_Symbol"));  
+            strings.add(guiBundleWrapper.getString("MainFrame_Code"));     
             strings.add(guiBundleWrapper.getString("PortfolioManagementJPanel_Dividend"));
             strings.add(guiBundleWrapper.getString("PortfolioManagementJPanel_Comment"));
         } else if (type == Type.StockIndicatorScanner) {
             strings.add(guiBundleWrapper.getString("IndicatorScannerJPanel_Indicator"));
             strings.add(guiBundleWrapper.getString("MainFrame_Code"));
-            strings.add(guiBundleWrapper.getString("MainFrame_Symbol"));
             strings.add(guiBundleWrapper.getString("MainFrame_Prev"));
             strings.add(guiBundleWrapper.getString("MainFrame_Open"));
             strings.add(guiBundleWrapper.getString("MainFrame_Last"));
@@ -274,13 +269,7 @@ public class Statement {
             strings.add(guiBundleWrapper.getString("MainFrame_Code")); 
             strings.add(guiBundleWrapper.getString("MainFrame_Symbol"));             
             strings.add(guiBundleWrapper.getString("MainFrame_Industry")); 
-            strings.add(guiBundleWrapper.getString("MainFrame_Board"));            
-        } else if (type == Type.UserDefinedDatabase) {
-            strings.add(guiBundleWrapper.getString("MainFrame_Code")); 
-            strings.add(guiBundleWrapper.getString("MainFrame_Symbol"));            
-        } else if (type == Type.StockNameDatabase) {
-            strings.add(guiBundleWrapper.getString("MainFrame_Code")); 
-            strings.add(guiBundleWrapper.getString("MainFrame_Name"));            
+            strings.add(guiBundleWrapper.getString("MainFrame_Board"));                                
         } else if (type == Type.WatchlistInfos) {
             strings.add(guiBundleWrapper.getString("WatchlistInfo_Country")); 
             strings.add(guiBundleWrapper.getString("WatchlistInfo_Name"));            
@@ -300,12 +289,106 @@ public class Statement {
         // but their type may be different. Hence, we will just let them fall
         // through all size checking.
         final int size = atoms.size();
-        if (size == 17)
+        if (size == 16)
         {
             /* Wow! */
             if (
             atoms.get(0).getType().equals(guiBundleWrapper.getString("MainFrame_Code")) &&
-            atoms.get(1).getType().equals(guiBundleWrapper.getString("MainFrame_Symbol")) &&
+            atoms.get(1).getType().equals(guiBundleWrapper.getString("MainFrame_Prev")) &&
+            atoms.get(2).getType().equals(guiBundleWrapper.getString("MainFrame_Open")) &&
+            atoms.get(3).getType().equals(guiBundleWrapper.getString("MainFrame_Last")) &&
+            atoms.get(4).getType().equals(guiBundleWrapper.getString("MainFrame_High")) &&
+            atoms.get(5).getType().equals(guiBundleWrapper.getString("MainFrame_Low")) &&
+            atoms.get(6).getType().equals(guiBundleWrapper.getString("MainFrame_Vol")) &&
+            atoms.get(7).getType().equals(guiBundleWrapper.getString("MainFrame_Chg")) &&
+            atoms.get(8).getType().equals(guiBundleWrapper.getString("MainFrame_ChgPercentage")) &&
+            atoms.get(9).getType().equals(guiBundleWrapper.getString("MainFrame_LVol")) &&
+            atoms.get(10).getType().equals(guiBundleWrapper.getString("MainFrame_Buy")) &&
+            atoms.get(11).getType().equals(guiBundleWrapper.getString("MainFrame_BQty")) &&
+            atoms.get(12).getType().equals(guiBundleWrapper.getString("MainFrame_Sell")) &&
+            atoms.get(13).getType().equals(guiBundleWrapper.getString("MainFrame_SQty")) &&
+            atoms.get(14).getType().equals(guiBundleWrapper.getString("MainFrame_FallBelow")) &&
+            atoms.get(15).getType().equals(guiBundleWrapper.getString("MainFrame_RiseAbove"))
+            ) {
+                return Type.RealtimeInfo;
+            }
+        }
+        if (size == 17) {
+            /* Wow! Beware, Stock will being translated into Code and Symbol */
+            // GUIBundle.getString("PortfolioManagementJPanel_Stock")
+            if (
+            atoms.get(0).getType().equals(guiBundleWrapper.getString("MainFrame_Code")) &&
+            atoms.get(1).getType().equals(guiBundleWrapper.getString("PortfolioManagementJPanel_Date")) &&
+            atoms.get(2).getType().equals(guiBundleWrapper.getString("PortfolioManagementJPanel_Units")) &&
+            atoms.get(3).getType().equals(guiBundleWrapper.getString("PortfolioManagementJPanel_PurchasePrice")) &&
+            atoms.get(4).getType().equals(guiBundleWrapper.getString("PortfolioManagementJPanel_CurrentPrice")) &&
+            atoms.get(5).getType().equals(guiBundleWrapper.getString("PortfolioManagementJPanel_PurchaseValue")) &&
+            atoms.get(6).getType().equals(guiBundleWrapper.getString("PortfolioManagementJPanel_CurrentValue")) &&
+            atoms.get(7).getType().equals(guiBundleWrapper.getString("PortfolioManagementJPanel_GainLossPrice")) &&
+            atoms.get(8).getType().equals(guiBundleWrapper.getString("PortfolioManagementJPanel_GainLossValue")) &&
+            atoms.get(9).getType().equals(guiBundleWrapper.getString("PortfolioManagementJPanel_GainLossPercentage")) &&
+            atoms.get(10).getType().equals(guiBundleWrapper.getString("PortfolioManagementJPanel_Broker")) &&
+            atoms.get(11).getType().equals(guiBundleWrapper.getString("PortfolioManagementJPanel_ClearingFee")) &&
+            atoms.get(12).getType().equals(guiBundleWrapper.getString("PortfolioManagementJPanel_StampDuty")) &&
+            atoms.get(13).getType().equals(guiBundleWrapper.getString("PortfolioManagementJPanel_NetPurchaseValue")) &&
+            atoms.get(14).getType().equals(guiBundleWrapper.getString("PortfolioManagementJPanel_NetGainLossValue")) &&
+            atoms.get(15).getType().equals(guiBundleWrapper.getString("PortfolioManagementJPanel_NetGainLossPercentage")) &&
+            atoms.get(16).getType().equals(guiBundleWrapper.getString("PortfolioManagementJPanel_Comment"))
+            ) {
+                return Type.PortfolioManagementBuy;
+            }
+        }
+        if (size == 21) {
+            if (
+            atoms.get(0).getType().equals(guiBundleWrapper.getString("MainFrame_Code")) &&
+            atoms.get(1).getType().equals(guiBundleWrapper.getString("PortfolioManagementJPanel_ReferenceDate")) &&
+            atoms.get(2).getType().equals(guiBundleWrapper.getString("PortfolioManagementJPanel_Date")) &&
+            atoms.get(3).getType().equals(guiBundleWrapper.getString("PortfolioManagementJPanel_Units")) &&
+            atoms.get(4).getType().equals(guiBundleWrapper.getString("PortfolioManagementJPanel_SellingPrice")) &&
+            atoms.get(5).getType().equals(guiBundleWrapper.getString("PortfolioManagementJPanel_PurchasePrice")) &&
+            atoms.get(6).getType().equals(guiBundleWrapper.getString("PortfolioManagementJPanel_SellingValue")) &&
+            atoms.get(7).getType().equals(guiBundleWrapper.getString("PortfolioManagementJPanel_PurchaseValue")) &&
+            atoms.get(8).getType().equals(guiBundleWrapper.getString("PortfolioManagementJPanel_PurchaseBroker")) &&
+            atoms.get(9).getType().equals(guiBundleWrapper.getString("PortfolioManagementJPanel_PurchaseClearingFee")) &&
+            atoms.get(10).getType().equals(guiBundleWrapper.getString("PortfolioManagementJPanel_PurchaseStampDuty")) &&
+            atoms.get(11).getType().equals(guiBundleWrapper.getString("PortfolioManagementJPanel_GainLossPrice")) &&
+            atoms.get(12).getType().equals(guiBundleWrapper.getString("PortfolioManagementJPanel_GainLossValue")) &&
+            atoms.get(13).getType().equals(guiBundleWrapper.getString("PortfolioManagementJPanel_GainLossPercentage")) &&
+            atoms.get(14).getType().equals(guiBundleWrapper.getString("PortfolioManagementJPanel_Broker")) &&
+            atoms.get(15).getType().equals(guiBundleWrapper.getString("PortfolioManagementJPanel_ClearingFee")) &&
+            atoms.get(16).getType().equals(guiBundleWrapper.getString("PortfolioManagementJPanel_StampDuty")) &&
+            atoms.get(17).getType().equals(guiBundleWrapper.getString("PortfolioManagementJPanel_NetSellingValue")) &&
+            atoms.get(18).getType().equals(guiBundleWrapper.getString("PortfolioManagementJPanel_NetGainLossValue")) &&
+            atoms.get(19).getType().equals(guiBundleWrapper.getString("PortfolioManagementJPanel_NetGainLossPercentage")) &&
+            atoms.get(20).getType().equals(guiBundleWrapper.getString("PortfolioManagementJPanel_Comment"))
+            ) {
+                return Type.PortfolioManagementSell;
+            }
+        }         
+        if (size == 3) {
+            if (
+            atoms.get(0).getType().equals(guiBundleWrapper.getString("PortfolioManagementJPanel_Date")) &&
+            atoms.get(1).getType().equals(guiBundleWrapper.getString("PortfolioManagementJPanel_Cash")) &&
+            atoms.get(2).getType().equals(guiBundleWrapper.getString("PortfolioManagementJPanel_Comment"))
+            ) {
+                return Type.PortfolioManagementDeposit;
+            }
+        }        
+        if (size == 4) {           
+            if (
+            atoms.get(0).getType().equals(guiBundleWrapper.getString("PortfolioManagementJPanel_Date")) &&
+            atoms.get(1).getType().equals(guiBundleWrapper.getString("MainFrame_Code")) &&
+            atoms.get(2).getType().equals(guiBundleWrapper.getString("PortfolioManagementJPanel_Dividend")) &&
+            atoms.get(3).getType().equals(guiBundleWrapper.getString("PortfolioManagementJPanel_Comment"))                    
+            ) {
+                return Type.PortfolioManagementDividend;
+            }
+        }        
+        if (size == 17) {
+            /* Wow! */
+            if (
+            atoms.get(0).getType().equals(guiBundleWrapper.getString("IndicatorScannerJPanel_Indicator")) &&
+            atoms.get(1).getType().equals(guiBundleWrapper.getString("MainFrame_Code")) &&
             atoms.get(2).getType().equals(guiBundleWrapper.getString("MainFrame_Prev")) &&
             atoms.get(3).getType().equals(guiBundleWrapper.getString("MainFrame_Open")) &&
             atoms.get(4).getType().equals(guiBundleWrapper.getString("MainFrame_Last")) &&
@@ -319,191 +402,8 @@ public class Statement {
             atoms.get(12).getType().equals(guiBundleWrapper.getString("MainFrame_BQty")) &&
             atoms.get(13).getType().equals(guiBundleWrapper.getString("MainFrame_Sell")) &&
             atoms.get(14).getType().equals(guiBundleWrapper.getString("MainFrame_SQty")) &&
-            atoms.get(15).getType().equals(guiBundleWrapper.getString("MainFrame_FallBelow")) &&
-            atoms.get(16).getType().equals(guiBundleWrapper.getString("MainFrame_RiseAbove"))
-            ) {
-                return Type.RealtimeInfo;
-            }
-        }
-        if (size == 18) {
-            /* Wow! Beware, Stock will being translated into Code and Symbol */
-            // GUIBundle.getString("PortfolioManagementJPanel_Stock")
-            if (
-            atoms.get(0).getType().equals(guiBundleWrapper.getString("MainFrame_Code")) &&
-            atoms.get(1).getType().equals(guiBundleWrapper.getString("MainFrame_Symbol")) &&
-            atoms.get(2).getType().equals(guiBundleWrapper.getString("PortfolioManagementJPanel_Date")) &&
-            atoms.get(3).getType().equals(guiBundleWrapper.getString("PortfolioManagementJPanel_Units")) &&
-            atoms.get(4).getType().equals(guiBundleWrapper.getString("PortfolioManagementJPanel_PurchasePrice")) &&
-            atoms.get(5).getType().equals(guiBundleWrapper.getString("PortfolioManagementJPanel_CurrentPrice")) &&
-            atoms.get(6).getType().equals(guiBundleWrapper.getString("PortfolioManagementJPanel_PurchaseValue")) &&
-            atoms.get(7).getType().equals(guiBundleWrapper.getString("PortfolioManagementJPanel_CurrentValue")) &&
-            atoms.get(8).getType().equals(guiBundleWrapper.getString("PortfolioManagementJPanel_GainLossPrice")) &&
-            atoms.get(9).getType().equals(guiBundleWrapper.getString("PortfolioManagementJPanel_GainLossValue")) &&
-            atoms.get(10).getType().equals(guiBundleWrapper.getString("PortfolioManagementJPanel_GainLossPercentage")) &&
-            atoms.get(11).getType().equals(guiBundleWrapper.getString("PortfolioManagementJPanel_Broker")) &&
-            atoms.get(12).getType().equals(guiBundleWrapper.getString("PortfolioManagementJPanel_ClearingFee")) &&
-            atoms.get(13).getType().equals(guiBundleWrapper.getString("PortfolioManagementJPanel_StampDuty")) &&
-            atoms.get(14).getType().equals(guiBundleWrapper.getString("PortfolioManagementJPanel_NetPurchaseValue")) &&
-            atoms.get(15).getType().equals(guiBundleWrapper.getString("PortfolioManagementJPanel_NetGainLossValue")) &&
-            atoms.get(16).getType().equals(guiBundleWrapper.getString("PortfolioManagementJPanel_NetGainLossPercentage")) &&
-            atoms.get(17).getType().equals(guiBundleWrapper.getString("PortfolioManagementJPanel_Comment"))
-            ) {
-                return Type.PortfolioManagementBuy;
-            }
-        }
-        if (size == 19) {
-            // Note, this code block is for legacy purpose. It should be removed
-            // after a while. The new code block should have PortfolioManagementJPanel_Broker,
-            // PortfolioManagementJPanel_ClearingFee, PortfolioManagementJPanel_StampDuty.
-            // They are being introduced starting from 1.0.6x
-
-            /* Wow! Beware, Stock will being translated into Code and Symbol */
-            // GUIBundle.getString("PortfolioManagementJPanel_Stock")
-            if (
-            atoms.get(0).getType().equals(guiBundleWrapper.getString("MainFrame_Code")) &&
-            atoms.get(1).getType().equals(guiBundleWrapper.getString("MainFrame_Symbol")) &&
-            atoms.get(2).getType().equals(guiBundleWrapper.getString("PortfolioManagementJPanel_ReferenceDate")) &&
-            atoms.get(3).getType().equals(guiBundleWrapper.getString("PortfolioManagementJPanel_Date")) &&
-            atoms.get(4).getType().equals(guiBundleWrapper.getString("PortfolioManagementJPanel_Units")) &&
-            atoms.get(5).getType().equals(guiBundleWrapper.getString("PortfolioManagementJPanel_SellingPrice")) &&
-            atoms.get(6).getType().equals(guiBundleWrapper.getString("PortfolioManagementJPanel_PurchasePrice")) &&
-            atoms.get(7).getType().equals(guiBundleWrapper.getString("PortfolioManagementJPanel_SellingValue")) &&
-            atoms.get(8).getType().equals(guiBundleWrapper.getString("PortfolioManagementJPanel_PurchaseValue")) &&
-            atoms.get(9).getType().equals(guiBundleWrapper.getString("PortfolioManagementJPanel_GainLossPrice")) &&
-            atoms.get(10).getType().equals(guiBundleWrapper.getString("PortfolioManagementJPanel_GainLossValue")) &&
-            atoms.get(11).getType().equals(guiBundleWrapper.getString("PortfolioManagementJPanel_GainLossPercentage")) &&
-            atoms.get(12).getType().equals(guiBundleWrapper.getString("PortfolioManagementJPanel_Broker")) &&
-            atoms.get(13).getType().equals(guiBundleWrapper.getString("PortfolioManagementJPanel_ClearingFee")) &&
-            atoms.get(14).getType().equals(guiBundleWrapper.getString("PortfolioManagementJPanel_StampDuty")) &&
-            atoms.get(15).getType().equals(guiBundleWrapper.getString("PortfolioManagementJPanel_NetSellingValue")) &&
-            atoms.get(16).getType().equals(guiBundleWrapper.getString("PortfolioManagementJPanel_NetGainLossValue")) &&
-            atoms.get(17).getType().equals(guiBundleWrapper.getString("PortfolioManagementJPanel_NetGainLossPercentage")) &&
-            atoms.get(18).getType().equals(guiBundleWrapper.getString("PortfolioManagementJPanel_Comment"))
-            ) {
-                return Type.PortfolioManagementSell;
-            }
-        }
-        if (size == 20) {
-            // Note, this code block is for legacy purpose. It should be removed
-            // after a while. The new code block should have PortfolioManagementJPanel_Broker,
-            // PortfolioManagementJPanel_ClearingFee, PortfolioManagementJPanel_StampDuty.
-            // They are being introduced starting from 1.0.6x            
-            if (
-            atoms.get(0).getType().equals(guiBundleWrapper.getString("MainFrame_Code")) &&
-            atoms.get(1).getType().equals(guiBundleWrapper.getString("MainFrame_Symbol")) &&
-            atoms.get(2).getType().equals(guiBundleWrapper.getString("PortfolioManagementJPanel_ReferenceDate")) &&
-            atoms.get(3).getType().equals(guiBundleWrapper.getString("PortfolioManagementJPanel_Date")) &&
-            atoms.get(4).getType().equals(guiBundleWrapper.getString("PortfolioManagementJPanel_Units")) &&
-            atoms.get(5).getType().equals(guiBundleWrapper.getString("PortfolioManagementJPanel_SellingPrice")) &&
-            atoms.get(6).getType().equals(guiBundleWrapper.getString("PortfolioManagementJPanel_PurchasePrice")) &&
-            atoms.get(7).getType().equals(guiBundleWrapper.getString("PortfolioManagementJPanel_SellingValue")) &&
-            atoms.get(8).getType().equals(guiBundleWrapper.getString("PortfolioManagementJPanel_PurchaseValue")) &&
-            atoms.get(9).getType().equals(guiBundleWrapper.getString("PortfolioManagementJPanel_PurchaseFee")) &&
-            atoms.get(10).getType().equals(guiBundleWrapper.getString("PortfolioManagementJPanel_GainLossPrice")) &&
-            atoms.get(11).getType().equals(guiBundleWrapper.getString("PortfolioManagementJPanel_GainLossValue")) &&
-            atoms.get(12).getType().equals(guiBundleWrapper.getString("PortfolioManagementJPanel_GainLossPercentage")) &&
-            atoms.get(13).getType().equals(guiBundleWrapper.getString("PortfolioManagementJPanel_Broker")) &&
-            atoms.get(14).getType().equals(guiBundleWrapper.getString("PortfolioManagementJPanel_ClearingFee")) &&
-            atoms.get(15).getType().equals(guiBundleWrapper.getString("PortfolioManagementJPanel_StampDuty")) &&
-            atoms.get(16).getType().equals(guiBundleWrapper.getString("PortfolioManagementJPanel_NetSellingValue")) &&
-            atoms.get(17).getType().equals(guiBundleWrapper.getString("PortfolioManagementJPanel_NetGainLossValue")) &&
-            atoms.get(18).getType().equals(guiBundleWrapper.getString("PortfolioManagementJPanel_NetGainLossPercentage")) &&
-            atoms.get(19).getType().equals(guiBundleWrapper.getString("PortfolioManagementJPanel_Comment"))
-            ) {
-                return Type.PortfolioManagementSell;
-            }
-        } 
-        if (size == 22) {
-            if (
-            atoms.get(0).getType().equals(guiBundleWrapper.getString("MainFrame_Code")) &&
-            atoms.get(1).getType().equals(guiBundleWrapper.getString("MainFrame_Symbol")) &&
-            atoms.get(2).getType().equals(guiBundleWrapper.getString("PortfolioManagementJPanel_ReferenceDate")) &&
-            atoms.get(3).getType().equals(guiBundleWrapper.getString("PortfolioManagementJPanel_Date")) &&
-            atoms.get(4).getType().equals(guiBundleWrapper.getString("PortfolioManagementJPanel_Units")) &&
-            atoms.get(5).getType().equals(guiBundleWrapper.getString("PortfolioManagementJPanel_SellingPrice")) &&
-            atoms.get(6).getType().equals(guiBundleWrapper.getString("PortfolioManagementJPanel_PurchasePrice")) &&
-            atoms.get(7).getType().equals(guiBundleWrapper.getString("PortfolioManagementJPanel_SellingValue")) &&
-            atoms.get(8).getType().equals(guiBundleWrapper.getString("PortfolioManagementJPanel_PurchaseValue")) &&
-            atoms.get(9).getType().equals(guiBundleWrapper.getString("PortfolioManagementJPanel_PurchaseBroker")) &&
-            atoms.get(10).getType().equals(guiBundleWrapper.getString("PortfolioManagementJPanel_PurchaseClearingFee")) &&
-            atoms.get(11).getType().equals(guiBundleWrapper.getString("PortfolioManagementJPanel_PurchaseStampDuty")) &&
-            atoms.get(12).getType().equals(guiBundleWrapper.getString("PortfolioManagementJPanel_GainLossPrice")) &&
-            atoms.get(13).getType().equals(guiBundleWrapper.getString("PortfolioManagementJPanel_GainLossValue")) &&
-            atoms.get(14).getType().equals(guiBundleWrapper.getString("PortfolioManagementJPanel_GainLossPercentage")) &&
-            atoms.get(15).getType().equals(guiBundleWrapper.getString("PortfolioManagementJPanel_Broker")) &&
-            atoms.get(16).getType().equals(guiBundleWrapper.getString("PortfolioManagementJPanel_ClearingFee")) &&
-            atoms.get(17).getType().equals(guiBundleWrapper.getString("PortfolioManagementJPanel_StampDuty")) &&
-            atoms.get(18).getType().equals(guiBundleWrapper.getString("PortfolioManagementJPanel_NetSellingValue")) &&
-            atoms.get(19).getType().equals(guiBundleWrapper.getString("PortfolioManagementJPanel_NetGainLossValue")) &&
-            atoms.get(20).getType().equals(guiBundleWrapper.getString("PortfolioManagementJPanel_NetGainLossPercentage")) &&
-            atoms.get(21).getType().equals(guiBundleWrapper.getString("PortfolioManagementJPanel_Comment"))
-            ) {
-                return Type.PortfolioManagementSell;
-            }
-        }         
-        if (size == 2) {
-            // Legacy CSV file handling. As in version <=1.0.6p, comment
-            // is not being saved to CSV.
-            if (
-            atoms.get(0).getType().equals(guiBundleWrapper.getString("PortfolioManagementJPanel_Date")) &&
-            atoms.get(1).getType().equals(guiBundleWrapper.getString("PortfolioManagementJPanel_Cash"))
-            ) {
-                return Type.PortfolioManagementDeposit;
-            }
-        }
-        if (size == 3) {
-            if (
-            atoms.get(0).getType().equals(guiBundleWrapper.getString("PortfolioManagementJPanel_Date")) &&
-            atoms.get(1).getType().equals(guiBundleWrapper.getString("PortfolioManagementJPanel_Cash")) &&
-            atoms.get(2).getType().equals(guiBundleWrapper.getString("PortfolioManagementJPanel_Comment"))
-            ) {
-                return Type.PortfolioManagementDeposit;
-            }
-        }        
-        if (size == 4) {
-            // Legacy CSV file handling. As in version <=1.0.6p, comment
-            // is not being saved to CSV.          
-            if (
-            atoms.get(0).getType().equals(guiBundleWrapper.getString("PortfolioManagementJPanel_Date")) &&
-            atoms.get(1).getType().equals(guiBundleWrapper.getString("MainFrame_Code")) &&
-            atoms.get(2).getType().equals(guiBundleWrapper.getString("MainFrame_Symbol")) &&
-            atoms.get(3).getType().equals(guiBundleWrapper.getString("PortfolioManagementJPanel_Dividend"))
-            ) {
-                return Type.PortfolioManagementDividend;
-            }
-        }
-        if (size == 5) {           
-            if (
-            atoms.get(0).getType().equals(guiBundleWrapper.getString("PortfolioManagementJPanel_Date")) &&
-            atoms.get(1).getType().equals(guiBundleWrapper.getString("MainFrame_Code")) &&
-            atoms.get(2).getType().equals(guiBundleWrapper.getString("MainFrame_Symbol")) &&
-            atoms.get(3).getType().equals(guiBundleWrapper.getString("PortfolioManagementJPanel_Dividend")) &&
-            atoms.get(4).getType().equals(guiBundleWrapper.getString("PortfolioManagementJPanel_Comment"))                    
-            ) {
-                return Type.PortfolioManagementDividend;
-            }
-        }        
-        if (size == 18) {
-            /* Wow! */
-            if (
-            atoms.get(0).getType().equals(guiBundleWrapper.getString("IndicatorScannerJPanel_Indicator")) &&
-            atoms.get(1).getType().equals(guiBundleWrapper.getString("MainFrame_Code")) &&
-            atoms.get(2).getType().equals(guiBundleWrapper.getString("MainFrame_Symbol")) &&
-            atoms.get(3).getType().equals(guiBundleWrapper.getString("MainFrame_Prev")) &&
-            atoms.get(4).getType().equals(guiBundleWrapper.getString("MainFrame_Open")) &&
-            atoms.get(5).getType().equals(guiBundleWrapper.getString("MainFrame_Last")) &&
-            atoms.get(6).getType().equals(guiBundleWrapper.getString("MainFrame_High")) &&
-            atoms.get(7).getType().equals(guiBundleWrapper.getString("MainFrame_Low")) &&
-            atoms.get(8).getType().equals(guiBundleWrapper.getString("MainFrame_Vol")) &&
-            atoms.get(9).getType().equals(guiBundleWrapper.getString("MainFrame_Chg")) &&
-            atoms.get(10).getType().equals(guiBundleWrapper.getString("MainFrame_ChgPercentage")) &&
-            atoms.get(11).getType().equals(guiBundleWrapper.getString("MainFrame_LVol")) &&
-            atoms.get(12).getType().equals(guiBundleWrapper.getString("MainFrame_Buy")) &&
-            atoms.get(13).getType().equals(guiBundleWrapper.getString("MainFrame_BQty")) &&
-            atoms.get(14).getType().equals(guiBundleWrapper.getString("MainFrame_Sell")) &&
-            atoms.get(15).getType().equals(guiBundleWrapper.getString("MainFrame_SQty")) &&
-            atoms.get(16).getType().equals(guiBundleWrapper.getString("IndicatorScannerJPanel_MCapital")) &&
-            atoms.get(17).getType().equals(guiBundleWrapper.getString("IndicatorScannerJPanel_SIssued"))
+            atoms.get(15).getType().equals(guiBundleWrapper.getString("IndicatorScannerJPanel_MCapital")) &&
+            atoms.get(16).getType().equals(guiBundleWrapper.getString("IndicatorScannerJPanel_SIssued"))
             ) {
                 return Type.StockIndicatorScanner;
             }
@@ -540,25 +440,7 @@ public class Statement {
             ) {
                 return Type.StockInfoDatabase;
             }            
-        }     
-        if (size == 2) {
-            /* Wow! */
-            if (
-            atoms.get(0).getType().equals(guiBundleWrapper.getString("MainFrame_Code")) &&
-            atoms.get(1).getType().equals(guiBundleWrapper.getString("MainFrame_Symbol"))
-            ) {
-                return Type.UserDefinedDatabase;
-            }            
-        }
-        if (size == 2) {
-            /* Wow! */
-            if (
-            atoms.get(0).getType().equals(guiBundleWrapper.getString("MainFrame_Code")) &&
-            atoms.get(1).getType().equals(guiBundleWrapper.getString("MainFrame_Name"))
-            ) {
-                return Type.StockNameDatabase;
-            }            
-        }    
+        }       
         if (size == 3) {
             if (
             atoms.get(0).getType().equals(guiBundleWrapper.getString("WatchlistInfo_Country")) &&

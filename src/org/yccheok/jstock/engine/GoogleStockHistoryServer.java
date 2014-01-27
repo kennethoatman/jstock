@@ -104,10 +104,6 @@ public class GoogleStockHistoryServer implements StockHistoryServer {
         double previousClosePrice = Double.MAX_VALUE;
         long time = 0;
         
-        Symbol symbol = Symbol.newInstance(code.toString());
-        String name = symbol.toString();
-        Stock.Board board = Stock.Board.Unknown;
-        Stock.Industry industry = Stock.Industry.Unknown;
         Calendar calendar = null;
         boolean initialized = false;
         
@@ -197,17 +193,6 @@ public class GoogleStockHistoryServer implements StockHistoryServer {
             double changePricePercentage = ((previousClosePrice == Double.MAX_VALUE) || (previousClosePrice == 0.0)) ? 0 : changePrice / previousClosePrice * 100.0;
 
             if (initialized == false) {
-                try {
-                    Stock stock = stockServer.getStock(googleCode);
-                    symbol = stock.symbol;
-                    name = stock.getName();
-                    board = stock.getBoard();
-                    industry = stock.getIndustry();
-                }
-                catch (StockNotFoundException exp) {
-                    log.error(null, exp);
-                }
-                
                 calendar = Calendar.getInstance();
                 
                 initialized = true;
@@ -235,10 +220,6 @@ public class GoogleStockHistoryServer implements StockHistoryServer {
             
             Stock stock = new Stock(
                     code,
-                    symbol,
-                    name,
-                    board,
-                    industry,
                     prevPrice,
                     openPrice,
                     closePrice, /* Last Price. */

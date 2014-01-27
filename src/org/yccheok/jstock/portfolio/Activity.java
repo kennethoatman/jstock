@@ -22,7 +22,7 @@ package org.yccheok.jstock.portfolio;
 import java.util.EnumMap;
 import java.util.Map;
 import javax.swing.ImageIcon;
-import org.yccheok.jstock.engine.Stock;
+import org.yccheok.jstock.engine.Code;
 
 /**
  *
@@ -30,8 +30,7 @@ import org.yccheok.jstock.engine.Stock;
  */
 public class Activity {
     public enum Param {
-        Stock,
-        StockInfo,
+        Code,
         Quantity        
     }
 
@@ -93,10 +92,10 @@ public class Activity {
 
     @Override
     public String toString() {
-        Stock stock = (Stock)this.get(Param.Stock);
+        Code code = (Code)this.get(Param.Code);
 
-        if (stock != null) {
-            return stock.symbol.toString() + " " + type.toString().toLowerCase() + " " + Utils.toCurrencyWithSymbol(DecimalPlaces.Three, amount);
+        if (code != null) {
+            return code.toString() + " " + type.toString().toLowerCase() + " " + Utils.toCurrencyWithSymbol(DecimalPlaces.Three, amount);
         }
 
         return type.toString().toLowerCase() + " " + Utils.toCurrencyWithSymbol(DecimalPlaces.Three, amount);

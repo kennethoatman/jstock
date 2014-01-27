@@ -16,7 +16,6 @@
  * with this program; if not, write to the Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
-
 package org.yccheok.jstock.file;
 
 import au.com.bytecode.opencsv.CSVReader;
@@ -49,18 +48,13 @@ import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.poifs.filesystem.POIFSFileSystem;
 import org.yccheok.jstock.engine.Code;
 import org.yccheok.jstock.engine.Stock;
-import org.yccheok.jstock.engine.Stock.Board;
-import org.yccheok.jstock.engine.Stock.Industry;
 import org.yccheok.jstock.engine.StockHistoryServer;
 import org.yccheok.jstock.engine.StockInfo;
 import org.yccheok.jstock.engine.StockInfoDatabase;
-import org.yccheok.jstock.engine.StockNameDatabase;
-import org.yccheok.jstock.engine.Symbol;
 import org.yccheok.jstock.file.GUIBundleWrapper.Language;
 import org.yccheok.jstock.gui.JStockOptions;
 import org.yccheok.jstock.gui.MainFrame;
 import org.yccheok.jstock.gui.POIUtils;
-import org.yccheok.jstock.gui.Pair;
 import org.yccheok.jstock.gui.StockTableModel;
 import org.yccheok.jstock.gui.portfolio.CommentableContainer;
 import org.yccheok.jstock.gui.treetable.BuyPortfolioTreeTableModelEx;
@@ -76,11 +70,14 @@ import org.yccheok.jstock.watchlist.WatchlistInfo;
  * @author yccheok
  */
 public class Statements {
+
     public static final Statements UNKNOWN_STATEMENTS = new Statements(Statement.Type.Unknown, GUIBundleWrapper.newInstance(Language.DEFAULT));
-    
+
     public static class StatementsEx {
+
         public final Statements statements;
         public final String title;
+
         public StatementsEx(Statements statements, String title) {
             if (statements == null || title == null) {
                 throw new java.lang.IllegalArgumentException();
@@ -89,6 +86,7 @@ public class Statements {
             this.title = title;
         }
     }
+
     /**
      * Prevent client from constructing Statements other than static factory
      * method.
@@ -103,10 +101,9 @@ public class Statements {
         final boolean isPenceToPoundConversionEnabled = jStockOptions.isPenceToPoundConversionEnabled();
 
         final GUIBundleWrapper guiBundleWrapper = GUIBundleWrapper.newInstance(languageIndependent ? GUIBundleWrapper.Language.INDEPENDENT : GUIBundleWrapper.Language.DEFAULT);
-        
+
         final String[] tmp = {
             guiBundleWrapper.getString("MainFrame_Code"),
-            guiBundleWrapper.getString("MainFrame_Symbol"),
             guiBundleWrapper.getString("PortfolioManagementJPanel_Date"),
             guiBundleWrapper.getString("PortfolioManagementJPanel_Units"),
             guiBundleWrapper.getString("PortfolioManagementJPanel_PurchasePrice"),
@@ -124,74 +121,72 @@ public class Statements {
             guiBundleWrapper.getString("PortfolioManagementJPanel_NetGainLossPercentage"),
             guiBundleWrapper.getString("PortfolioManagementJPanel_Comment")
         };
-        
+
         Statement.What what = Statement.what(Arrays.asList(tmp));
         final Statements statements = new Statements(what.type, what.guiBundleWrapper);
 
-        final Portfolio portfolio = (Portfolio)buyPortfolioTreeTableModel.getRoot();
+        final Portfolio portfolio = (Portfolio) buyPortfolioTreeTableModel.getRoot();
         final int summaryCount = portfolio.getChildCount();
 
         for (int i = 0; i < summaryCount; i++) {
             Object o = portfolio.getChildAt(i);
-            final TransactionSummary transactionSummary = (TransactionSummary)o;
-            
+            final TransactionSummary transactionSummary = (TransactionSummary) o;
+
             // Metadatas will be used to store TransactionSummary's comment.
             final String comment = transactionSummary.getComment().trim();
             if (comment.isEmpty() == false) {
-                final Stock stock = ((Transaction)transactionSummary.getChildAt(0)).getStock();
-                statements.metadatas.put(stock.code.toString(), comment);
+                final Code code = ((Transaction) transactionSummary.getChildAt(0)).getCode();
+                statements.metadatas.put(code.toString(), comment);
             }
-            
+
             final int transactionCount = transactionSummary.getChildCount();
-            for (int j = 0; j < transactionCount; j++)
-            {
-                final Transaction transaction = (Transaction)transactionSummary.getChildAt(j);
-                final Stock stock = transaction.getStock();
+            for (int j = 0; j < transactionCount; j++) {
+                final Transaction transaction = (Transaction) transactionSummary.getChildAt(j);
+                final Code code = transaction.getCode();
                 final List<Atom> atoms = new ArrayList<Atom>();
-                atoms.add(new Atom(stock.code.toString(), tmp[0]));
-                atoms.add(new Atom(stock.symbol.toString(), tmp[1]));
-                
+                atoms.add(new Atom(code.toString(), tmp[0]));
+
                 DateFormat dateFormat = org.yccheok.jstock.gui.Utils.getCommonDateFormat();
-                final String dateString = transaction.getDate() != null ? dateFormat.format(transaction.getDate().getTime()) : "";                        
-                atoms.add(new Atom(dateString, tmp[2]));
-                atoms.add(new Atom(transaction.getQuantity(), tmp[3]));
-                atoms.add(new Atom(transaction.getPrice(), tmp[4]));
-                atoms.add(new Atom(buyPortfolioTreeTableModel.getCurrentPrice(transaction), tmp[5]));
+                final String dateString = transaction.getDate() != null ? dateFormat.format(transaction.getDate().getTime()) : "";
+                atoms.add(new Atom(dateString, tmp[1]));
+                atoms.add(new Atom(transaction.getQuantity(), tmp[2]));
+                atoms.add(new Atom(transaction.getPrice(), tmp[3]));
+                atoms.add(new Atom(buyPortfolioTreeTableModel.getCurrentPrice(transaction), tmp[4]));
                 if (isPenceToPoundConversionEnabled == false) {
-                    atoms.add(new Atom(transaction.getTotal(), tmp[6]));
+                    atoms.add(new Atom(transaction.getTotal(), tmp[5]));
                 } else {
-                    atoms.add(new Atom(transaction.getTotal() / 100.0, tmp[6]));
+                    atoms.add(new Atom(transaction.getTotal() / 100.0, tmp[5]));
                 }
-                atoms.add(new Atom(buyPortfolioTreeTableModel.getCurrentValue(transaction), tmp[7]));
-                atoms.add(new Atom(buyPortfolioTreeTableModel.getGainLossPrice(transaction), tmp[8]));
+                atoms.add(new Atom(buyPortfolioTreeTableModel.getCurrentValue(transaction), tmp[6]));
+                atoms.add(new Atom(buyPortfolioTreeTableModel.getGainLossPrice(transaction), tmp[7]));
                 if (isPenceToPoundConversionEnabled == false) {
-                    atoms.add(new Atom(buyPortfolioTreeTableModel.getGainLossValue(transaction), tmp[9]));
+                    atoms.add(new Atom(buyPortfolioTreeTableModel.getGainLossValue(transaction), tmp[8]));
                 } else {
-                    atoms.add(new Atom(buyPortfolioTreeTableModel.getGainLossValue(transaction) / 100.0, tmp[9]));
-                }                
-                atoms.add(new Atom(buyPortfolioTreeTableModel.getGainLossPercentage(transaction), tmp[10]));
-                atoms.add(new Atom(transaction.getBroker(), tmp[11]));
-                atoms.add(new Atom(transaction.getClearingFee(), tmp[12]));
-                atoms.add(new Atom(transaction.getStampDuty(), tmp[13]));
-                if (isPenceToPoundConversionEnabled == false) {
-                    atoms.add(new Atom(transaction.getNetTotal(), tmp[14]));
-                    atoms.add(new Atom(buyPortfolioTreeTableModel.getNetGainLossValue(transaction), tmp[15]));
-                } else {
-                    atoms.add(new Atom(transaction.getNetTotal() / 100.0, tmp[14]));
-                    atoms.add(new Atom(buyPortfolioTreeTableModel.getNetGainLossValue(transaction) / 100.0, tmp[15]));
+                    atoms.add(new Atom(buyPortfolioTreeTableModel.getGainLossValue(transaction) / 100.0, tmp[8]));
                 }
-                atoms.add(new Atom(buyPortfolioTreeTableModel.getNetGainLossPercentage(transaction), tmp[16]));
-                atoms.add(new Atom(transaction.getComment(), tmp[17]));
-                
+                atoms.add(new Atom(buyPortfolioTreeTableModel.getGainLossPercentage(transaction), tmp[9]));
+                atoms.add(new Atom(transaction.getBroker(), tmp[10]));
+                atoms.add(new Atom(transaction.getClearingFee(), tmp[11]));
+                atoms.add(new Atom(transaction.getStampDuty(), tmp[12]));
+                if (isPenceToPoundConversionEnabled == false) {
+                    atoms.add(new Atom(transaction.getNetTotal(), tmp[13]));
+                    atoms.add(new Atom(buyPortfolioTreeTableModel.getNetGainLossValue(transaction), tmp[14]));
+                } else {
+                    atoms.add(new Atom(transaction.getNetTotal() / 100.0, tmp[13]));
+                    atoms.add(new Atom(buyPortfolioTreeTableModel.getNetGainLossValue(transaction) / 100.0, tmp[14]));
+                }
+                atoms.add(new Atom(buyPortfolioTreeTableModel.getNetGainLossPercentage(transaction), tmp[15]));
+                atoms.add(new Atom(transaction.getComment(), tmp[16]));
+
                 final Statement statement = new Statement(atoms);
-               
+
                 if (statements.getType() != statement.getType()) {
                     return UNKNOWN_STATEMENTS;
                 }
-                statements.statements.add(statement);                
+                statements.statements.add(statement);
             }
-        }   
-        
+        }
+
         return statements;
     }
 
@@ -203,20 +198,20 @@ public class Statements {
      * independent?
      * @return the constructed Statements. UNKNOWN_STATEMENTS if fail
      */
-    public static Statements newInstanceFromStockHistoryServer(StockHistoryServer server, boolean languageIndependent) {        
+    public static Statements newInstanceFromStockHistoryServer(StockHistoryServer server, boolean languageIndependent) {
         final GUIBundleWrapper guiBundleWrapper = GUIBundleWrapper.newInstance(languageIndependent ? GUIBundleWrapper.Language.INDEPENDENT : GUIBundleWrapper.Language.DEFAULT);
 
         final Statements s = new Statements(Statement.Type.StockHistory, guiBundleWrapper);
-        
+
         final int size = server.size();
-        
+
         final DateFormat dateFormat = org.yccheok.jstock.gui.Utils.getCommonDateFormat();
-        
+
         Stock stock = null;
         for (int i = 0; i < size; i++) {
             final long timestamp = server.getTimestamp(i);
             stock = server.getStock(timestamp);
-            assert(timestamp != 0 && stock != null);
+            assert (timestamp != 0 && stock != null);
             final List<Atom> atoms = new ArrayList<Atom>();
             final Atom atom0 = new Atom(dateFormat.format(timestamp), guiBundleWrapper.getString("StockHistory_Date"));
             final Atom atom1 = new Atom(Double.valueOf(stock.getOpenPrice()), guiBundleWrapper.getString("StockHistory_Open"));
@@ -239,16 +234,12 @@ public class Statements {
             }
             s.statements.add(statement);
         }
-        
+
         if (stock != null) {
             // Metadata. Oh yeah...
             s.metadatas.put("code", stock.code.toString());
-            s.metadatas.put("symbol", stock.symbol.toString());
-            s.metadatas.put("name", stock.getName());
-            s.metadatas.put("board", stock.getBoard().name());
-            s.metadatas.put("industry", stock.getIndustry().name());
         }
-        
+
         return s;
     }
 
@@ -261,21 +252,18 @@ public class Statements {
     public static List<Statements> newInstanceFromExcelFile(File file) {
         FileInputStream fileInputStream = null;
         final List<Statements> statementsList = new ArrayList<Statements>();
-        try
-        {
+        try {
             fileInputStream = new FileInputStream(file);
             final POIFSFileSystem fs = new POIFSFileSystem(fileInputStream);
             final HSSFWorkbook wb = new HSSFWorkbook(fs);
             final int numberOfSheets = wb.getNumberOfSheets();
-            for (int k = 0; k < numberOfSheets; k++)
-            {
+            for (int k = 0; k < numberOfSheets; k++) {
                 final HSSFSheet sheet = wb.getSheetAt(k);
                 final int startRow = sheet.getFirstRowNum();
                 final int endRow = sheet.getLastRowNum();
                 // If there are 3 rows, endRow will be 2.
                 // We must have at least 2 rows. (endRow = 1)
-                if (startRow != 0 || endRow <= startRow)
-                {
+                if (startRow != 0 || endRow <= startRow) {
                     continue;
                 }
 
@@ -310,8 +298,7 @@ public class Statements {
                     continue;
                 }
 
-                if (types.size() != (endCell - startCell))
-                {
+                if (types.size() != (endCell - startCell)) {
                     continue;
                 }
 
@@ -333,23 +320,19 @@ public class Statements {
                             final HSSFRichTextString richString = cell.getRichStringCellValue();
                             if (richString != null) {
                                 value = richString.getString();
-                            }
-                            else {
+                            } else {
                                 value = "";
                             }
-                        }
-                        else if (cell.getCellType() == HSSFCell.CELL_TYPE_NUMERIC) {
+                        } else if (cell.getCellType() == HSSFCell.CELL_TYPE_NUMERIC) {
                             try {
                                 value = new Double(cell.getNumericCellValue());
-                            }
-                            catch (NumberFormatException ex) {
+                            } catch (NumberFormatException ex) {
                                 log.error(null, ex);
                                 value = new Double(0.0);
                             }
+                        } else {
                         }
-                        else {
-                        }
-                        
+
                         if (null == value) {
                             continue;
                         }
@@ -370,13 +353,10 @@ public class Statements {
                 }
 
             }   /* for(int k = 0; k < numberOfSheets; k++) */
-        }
-        catch (Exception ex)
-        {
+
+        } catch (Exception ex) {
             log.error(null, ex);
-        }
-        finally
-        {
+        } finally {
             org.yccheok.jstock.gui.Utils.close(fileInputStream);
         }
         return statementsList;
@@ -395,17 +375,17 @@ public class Statements {
         InputStreamReader inputStreamReader = null;
         CSVReader csvreader = null;
         Statements s = null;
-        
+
         try {
             fileInputStream = new FileInputStream(file);
-            inputStreamReader = new InputStreamReader(fileInputStream,  Charset.forName("UTF-8"));
+            inputStreamReader = new InputStreamReader(fileInputStream, Charset.forName("UTF-8"));
             csvreader = new CSVReader(inputStreamReader);
             final List<String> types = new ArrayList<String>();
 
-            String [] nextLine;
+            String[] nextLine;
             Map<String, String> metadatas = new LinkedHashMap<String, String>();
             if ((nextLine = csvreader.readNext()) != null) {
-                
+
                 // Metadata handling.
                 while (nextLine != null && nextLine.length == 1) {
                     String[] tokens = nextLine[0].split("=", 2);
@@ -423,12 +403,12 @@ public class Statements {
                         break;
                     }
                 }
-                
+
                 if (nextLine != null) {
                     types.addAll(Arrays.asList(nextLine));
                 }
             }   /* if ((nextLine = csvreader.readNext()) != null) */
-            
+
             if (types.isEmpty()) {
                 return UNKNOWN_STATEMENTS;
             } else {
@@ -463,7 +443,7 @@ public class Statements {
 
             // Pump in metadata.
             s.metadatas.putAll(metadatas);
-            
+
             status = true;
         } catch (IOException ex) {
             log.error(null, ex);
@@ -485,163 +465,49 @@ public class Statements {
 
         return UNKNOWN_STATEMENTS;
     }
-    
-    /**
-     * Construct Statements based on given stock pairs.
-     *
-     * @param tableModel give stock pairs
-     * @return the constructed Statements. UNKNOWN_STATEMENTS if fail
-     */        
-    public static Statements newInstanceFromUserDefinedDatabase(java.util.List<Pair<Code, Symbol>> pairs) {
-        GUIBundleWrapper guiBundleWrapper = GUIBundleWrapper.newInstance(GUIBundleWrapper.Language.INDEPENDENT);
-        Statements s = new Statements(Statement.Type.UserDefinedDatabase, guiBundleWrapper);
-        
-        final String code_string = guiBundleWrapper.getString("MainFrame_Code");
-        final String symbol_string = guiBundleWrapper.getString("MainFrame_Symbol");
-        
-        for (Pair<Code, Symbol> pair : pairs) {
-            final List<Atom> atoms = new ArrayList<Atom>();
-            atoms.add(new Atom(pair.first, code_string));
-            atoms.add(new Atom(pair.second, symbol_string));
-            Statement statement = new Statement(atoms);
-            
-            // They should be the same type. The checking just act as paranoid.
-            if (s.getType() != statement.getType()) {
-                throw new java.lang.RuntimeException("" + statement.getType());
-            }
-            s.statements.add(statement);            
-        }
-        return s;
-    }
-    
-    public static Statements newInstanceFromStockNameDatabase(StockNameDatabase stockNameDatabase) {
-        GUIBundleWrapper guiBundleWrapper = GUIBundleWrapper.newInstance(GUIBundleWrapper.Language.INDEPENDENT);
-        Statements s = new Statements(Statement.Type.StockNameDatabase, guiBundleWrapper);
-        
-        final String code_string = guiBundleWrapper.getString("MainFrame_Code");
-        final String name_string = guiBundleWrapper.getString("MainFrame_Name");
-        
-        for (Map.Entry<Code, String> entry : stockNameDatabase.getCodeToName().entrySet()) {
-            final Code code = entry.getKey();
-            final String name = entry.getValue();
-            final List<Atom> atoms = new ArrayList<Atom>();
-            atoms.add(new Atom(code, code_string));
-            atoms.add(new Atom(name, name_string));
-            Statement statement = new Statement(atoms);
-            
-            // They should be the same type. The checking just act as paranoid.
-            if (s.getType() != statement.getType()) {
-                throw new java.lang.RuntimeException("" + statement.getType());
-            }
-            s.statements.add(statement);            
-        }
-        return s;
-    }
 
+//    /**
+//     * Construct Statements based on given stock pairs.
+//     *
+//     * @param tableModel give stock pairs
+//     * @return the constructed Statements. UNKNOWN_STATEMENTS if fail
+//     */        
+//    public static Statements newInstanceFromUserDefinedDatabase(java.util.List<Pair<Code, Symbol>> pairs) {
+//        GUIBundleWrapper guiBundleWrapper = GUIBundleWrapper.newInstance(GUIBundleWrapper.Language.INDEPENDENT);
+//        Statements s = new Statements(Statement.Type.UserDefinedDatabase, guiBundleWrapper);
+//        
+//        final String code_string = guiBundleWrapper.getString("MainFrame_Code");
+//        final String symbol_string = guiBundleWrapper.getString("MainFrame_Symbol");
+//        
+//        for (Pair<Code, Symbol> pair : pairs) {
+//            final List<Atom> atoms = new ArrayList<Atom>();
+//            atoms.add(new Atom(pair.first, code_string));
+//            atoms.add(new Atom(pair.second, symbol_string));
+//            Statement statement = new Statement(atoms);
+//            
+//            // They should be the same type. The checking just act as paranoid.
+//            if (s.getType() != statement.getType()) {
+//                throw new java.lang.RuntimeException("" + statement.getType());
+//            }
+//            s.statements.add(statement);            
+//        }
+//        return s;
+//    }
+//   
     public static Statements newInstanceFromWatchlistInfos(List<WatchlistInfo> wathclistInfos) {
         GUIBundleWrapper guiBundleWrapper = GUIBundleWrapper.newInstance(GUIBundleWrapper.Language.INDEPENDENT);
         Statements s = new Statements(Statement.Type.WatchlistInfos, guiBundleWrapper);
-        
+
         final String country_string = guiBundleWrapper.getString("WatchlistInfo_Country");
         final String name_string = guiBundleWrapper.getString("WatchlistInfo_Name");
-        final String size_string = guiBundleWrapper.getString("WatchlistInfo_Size");        
-        
+        final String size_string = guiBundleWrapper.getString("WatchlistInfo_Size");
+
         for (WatchlistInfo watchlistInfo : wathclistInfos) {
             final List<Atom> atoms = new ArrayList<Atom>();
             atoms.add(new Atom(watchlistInfo.country, country_string));
             atoms.add(new Atom(watchlistInfo.name, name_string));
-            atoms.add(new Atom(watchlistInfo.size, size_string)); 
+            atoms.add(new Atom(watchlistInfo.size, size_string));
             Statement statement = new Statement(atoms);
-            // They should be the same type. The checking just act as paranoid.
-            if (s.getType() != statement.getType()) {
-                throw new java.lang.RuntimeException("" + statement.getType());
-            }
-            s.statements.add(statement);            
-        }
-        return s;
-    }
-    
-    public static Statements newInstanceFromPortfolioInfos(List<PortfolioInfo> portfolioInfos) {
-        GUIBundleWrapper guiBundleWrapper = GUIBundleWrapper.newInstance(GUIBundleWrapper.Language.INDEPENDENT);
-        Statements s = new Statements(Statement.Type.PortfolioInfos, guiBundleWrapper);
-        
-        final String country_string = guiBundleWrapper.getString("PortfolioInfo_Country");
-        final String name_string = guiBundleWrapper.getString("PortfolioInfo_Name");
-        final String size_string = guiBundleWrapper.getString("PortfolioInfo_Size");        
-        
-        for (PortfolioInfo portfolioInfo : portfolioInfos) {
-            final List<Atom> atoms = new ArrayList<Atom>();
-            atoms.add(new Atom(portfolioInfo.country, country_string));
-            atoms.add(new Atom(portfolioInfo.name, name_string));
-            atoms.add(new Atom(portfolioInfo.size, size_string)); 
-            Statement statement = new Statement(atoms);
-            // They should be the same type. The checking just act as paranoid.
-            if (s.getType() != statement.getType()) {
-                throw new java.lang.RuntimeException("" + statement.getType());
-            }
-            s.statements.add(statement);            
-        }
-        return s;
-    }
-    
-    /**
-     * Construct Statements based on given stock info database.
-     *
-     * @param tableModel give stock info database
-     * @return the constructed Statements. UNKNOWN_STATEMENTS if fail
-     */    
-    public static Statements newInstanceFromStockInfoDatabase(StockInfoDatabase stockInfoDatabase) {
-        GUIBundleWrapper guiBundleWrapper = GUIBundleWrapper.newInstance(GUIBundleWrapper.Language.INDEPENDENT);
-        Statements s = new Statements(Statement.Type.StockInfoDatabase, guiBundleWrapper);
-        
-        // Build mechanism, to retrieve StockInfo's Board and Industry.
-        Map<StockInfo, Industry> stockInfo2Industry = new HashMap<StockInfo, Industry>();
-        Map<StockInfo, Board> stockInfo2Board = new HashMap<StockInfo, Board>();
-        
-        List<Industry> industries = stockInfoDatabase.getIndustries();
-        List<Board> boards = stockInfoDatabase.getBoards();
-        
-        for (Industry industry : industries) {
-            List<StockInfo> stockInfos = stockInfoDatabase.getStockInfos(industry);
-            for (StockInfo stockInfo : stockInfos) {
-                stockInfo2Industry.put(stockInfo, industry);
-            }
-        }
-        
-        for (Board board : boards) {
-            List<StockInfo> stockInfos = stockInfoDatabase.getStockInfos(board);
-            for (StockInfo stockInfo : stockInfos) {
-                stockInfo2Board.put(stockInfo, board);
-            }
-        }   
-        
-        final String code_string = guiBundleWrapper.getString("MainFrame_Code");
-        final String symbol_string = guiBundleWrapper.getString("MainFrame_Symbol");
-        final String industry_string = guiBundleWrapper.getString("MainFrame_Industry");
-        final String board_string = guiBundleWrapper.getString("MainFrame_Board");
-        
-        List<StockInfo> stockInfos = stockInfoDatabase.getStockInfos();
-        for (StockInfo stockInfo : stockInfos) {
-            Industry industry = stockInfo2Industry.get(stockInfo);
-            Board board = stockInfo2Board.get(stockInfo);
-            if (industry == null) {
-                // Shouldn't happen.
-                industry = Industry.Unknown;
-            }
-            if (board == null) {
-                // Shouldn't happen.
-                board = Board.Unknown;
-            }            
-            final List<Atom> atoms = new ArrayList<Atom>();
-            atoms.add(new Atom(stockInfo.code, code_string));
-            atoms.add(new Atom(stockInfo.symbol, symbol_string));
-            // Do not use toString, as we had overridden toString. Use 
-            // toOriginalString, as later we need to perfrom string to enum 
-            // conversion.
-            atoms.add(new Atom(industry.toOriginalString(), industry_string));
-            atoms.add(new Atom(board.toOriginalString(), board_string)); 
-            Statement statement = new Statement(atoms);
-            
             // They should be the same type. The checking just act as paranoid.
             if (s.getType() != statement.getType()) {
                 throw new java.lang.RuntimeException("" + statement.getType());
@@ -650,7 +516,69 @@ public class Statements {
         }
         return s;
     }
-    
+
+    public static Statements newInstanceFromPortfolioInfos(List<PortfolioInfo> portfolioInfos) {
+        GUIBundleWrapper guiBundleWrapper = GUIBundleWrapper.newInstance(GUIBundleWrapper.Language.INDEPENDENT);
+        Statements s = new Statements(Statement.Type.PortfolioInfos, guiBundleWrapper);
+
+        final String country_string = guiBundleWrapper.getString("PortfolioInfo_Country");
+        final String name_string = guiBundleWrapper.getString("PortfolioInfo_Name");
+        final String size_string = guiBundleWrapper.getString("PortfolioInfo_Size");
+
+        for (PortfolioInfo portfolioInfo : portfolioInfos) {
+            final List<Atom> atoms = new ArrayList<Atom>();
+            atoms.add(new Atom(portfolioInfo.country, country_string));
+            atoms.add(new Atom(portfolioInfo.name, name_string));
+            atoms.add(new Atom(portfolioInfo.size, size_string));
+            Statement statement = new Statement(atoms);
+            // They should be the same type. The checking just act as paranoid.
+            if (s.getType() != statement.getType()) {
+                throw new java.lang.RuntimeException("" + statement.getType());
+            }
+            s.statements.add(statement);
+        }
+        return s;
+    }
+
+    /**
+     * Construct Statements based on given stock info database.
+     *
+     * @param tableModel give stock info database
+     * @return the constructed Statements. UNKNOWN_STATEMENTS if fail
+     */
+    public static Statements newInstanceFromStockInfoDatabase(StockInfoDatabase stockInfoDatabase, boolean user, boolean nonUser) {
+        GUIBundleWrapper guiBundleWrapper = GUIBundleWrapper.newInstance(GUIBundleWrapper.Language.INDEPENDENT);
+        Statements s = new Statements(Statement.Type.StockInfoDatabase, guiBundleWrapper);
+
+        final String code_string = guiBundleWrapper.getString("MainFrame_Code");
+        final String name_string = guiBundleWrapper.getString("MainFrame_Symbol");
+        final String industry_string = guiBundleWrapper.getString("MainFrame_Industry");
+        final String board_string = guiBundleWrapper.getString("MainFrame_Board");
+
+        List<StockInfo> stockInfos = stockInfoDatabase.getStockInfos();
+        for (StockInfo stockInfo : stockInfos) {
+            if ((stockInfo.getUserDefined() && user) || (!stockInfo.getUserDefined() && nonUser)) {
+
+                final List<Atom> atoms = new ArrayList<Atom>();
+                atoms.add(new Atom(stockInfo.code, code_string));
+                atoms.add(new Atom(stockInfo.getName(), name_string));
+                // Do not use toString, as we had overridden toString. Use 
+                // toOriginalString, as later we need to perfrom string to enum 
+                // conversion.
+                atoms.add(new Atom(stockInfo.getIndustry().toOriginalString(), industry_string));
+                atoms.add(new Atom(stockInfo.getBoard().toOriginalString(), board_string));
+                Statement statement = new Statement(atoms);
+
+                // They should be the same type. The checking just act as paranoid.
+                if (s.getType() != statement.getType()) {
+                    throw new java.lang.RuntimeException("" + statement.getType());
+                }
+                s.statements.add(statement);
+            }
+        }
+        return s;
+    }
+
     /**
      * Construct Statements based on given stock price.
      *
@@ -661,7 +589,7 @@ public class Statements {
         GUIBundleWrapper guiBundleWrapper = GUIBundleWrapper.newInstance(GUIBundleWrapper.Language.INDEPENDENT);
         Statements s = new Statements(Statement.Type.StockPrice, guiBundleWrapper);
         s.metadatas.put("timestamp", Long.toString(timestamp));
-        
+
         final String code_string = guiBundleWrapper.getString("MainFrame_Code");
         final String last_string = guiBundleWrapper.getString("MainFrame_Last");
         for (Map.Entry<Code, Double> stockPrice : stockPrices.entrySet()) {
@@ -676,10 +604,10 @@ public class Statements {
                 throw new java.lang.RuntimeException("" + statement.getType());
             }
             s.statements.add(statement);
-        }        
+        }
         return s;
     }
-    
+
     /**
      * Construct Statements based on given TableModel.
      *
@@ -687,83 +615,84 @@ public class Statements {
      * @return the constructed Statements. UNKNOWN_STATEMENTS if fail
      */
     public static Statements newInstanceFromTableModel(TableModel tableModel, boolean languageIndependent) {
-        final CSVHelper csvHelper = (CSVHelper)tableModel;
+        final CSVHelper csvHelper = (CSVHelper) tableModel;
         final GUIBundleWrapper guiBundleWrapper = GUIBundleWrapper.newInstance(languageIndependent ? GUIBundleWrapper.Language.INDEPENDENT : GUIBundleWrapper.Language.DEFAULT);
-        
-        final int column = tableModel.getColumnCount();
+
+        final int column = csvHelper.getMappedColumnCount();
         final int row = tableModel.getRowCount();
 
         List<String> strings = new ArrayList<String>();
-        for (int i = 0; i < column; i++) {
+        for (int j = 0; j < column; j++) {
+            int i = csvHelper.getMappedColumn(j);
             final String type = languageIndependent ? csvHelper.getLanguageIndependentColumnName(i) : tableModel.getColumnName(i);
             final Class c = tableModel.getColumnClass(i);
-            if (c.equals(Stock.class)) {                    
+            if (c.equals(Stock.class)) {
                 final String code_string = guiBundleWrapper.getString("MainFrame_Code");
-                final String symbol_string = guiBundleWrapper.getString("MainFrame_Symbol");
+                // CK_Dunno final String symbol_string = guiBundleWrapper.getString("MainFrame_Symbol");
                 strings.add(code_string);
-                strings.add(symbol_string);
-            } if (c.equals(StockInfo.class)) {
+                // CK_Dunno strings.add(symbol_string);
+            }
+            if (c.equals(StockInfo.class)) {
                 final String code_string = guiBundleWrapper.getString("MainFrame_Code");
-                final String symbol_string = guiBundleWrapper.getString("MainFrame_Symbol");
+                // CK_Dunno final String symbol_string = guiBundleWrapper.getString("MainFrame_Symbol");
                 strings.add(code_string);
-                strings.add(symbol_string);                
+                // CK_Dunno strings.add(symbol_string);                
             } else {
                 strings.add(type);
             }
 
         }
-        
+
         // Comment handling.
         CommentableContainer commentableContainer = null;
         if (tableModel instanceof CommentableContainer) {
-            commentableContainer = (CommentableContainer)tableModel;
+            commentableContainer = (CommentableContainer) tableModel;
         }
-        
+
         Statement.What what = Statement.what(strings);
         final Statements s = new Statements(what.type, what.guiBundleWrapper);
-        
+
         for (int i = 0; i < row; i++) {
             final List<Atom> atoms = new ArrayList<Atom>();
-            for (int j = 0; j < column; j++) {
+            for (int k = 0; k < column; k++) {
+                final int j = csvHelper.getMappedColumn(k);
                 final String type = languageIndependent ? csvHelper.getLanguageIndependentColumnName(j) : tableModel.getColumnName(j);
                 final Object object = tableModel.getValueAt(i, j);
                 final Class c = tableModel.getColumnClass(j);
                 if (c.equals(Stock.class)) {
-                    final Stock stock = (Stock)object;
+                    final Stock stock = (Stock) object;
                     // There are no way to represent Stock in text form. We
                     // will represent them in Code and Symbol.
                     // Code first. Follow by symbol.
-                    
+
                     final String code_string = guiBundleWrapper.getString("MainFrame_Code");
-                    final String symbol_string = guiBundleWrapper.getString("MainFrame_Symbol");
+                    // CK_Dunno final String symbol_string = guiBundleWrapper.getString("MainFrame_Symbol");
 
                     atoms.add(new Atom(stock.code.toString(), code_string));
-                    atoms.add(new Atom(stock.symbol.toString(), symbol_string));
-                }
-                else if (c.equals(StockInfo.class)) {
-                    final StockInfo stockInfo = (StockInfo)object;
-                    
+                    // CK_Dunno atoms.add(new Atom(stock.symbol.toString(), symbol_string));
+                } else if (c.equals(StockInfo.class)) {
+                    final StockInfo stockInfo = (StockInfo) object;
+
                     final String code_string = guiBundleWrapper.getString("MainFrame_Code");
-                    final String symbol_string = guiBundleWrapper.getString("MainFrame_Symbol");
+                    // CK_Dunno final String symbol_string = guiBundleWrapper.getString("MainFrame_Symbol");
 
                     atoms.add(new Atom(stockInfo.code.toString(), code_string));
-                    atoms.add(new Atom(stockInfo.symbol.toString(), symbol_string));                    
-                }
-                else if (c.equals(Date.class)) {
+                    // CK_Dunno atoms.add(new Atom(stockInfo.symbol.toString(), symbol_string));                    
+                } else if (c.equals(Date.class)) {
                     DateFormat dateFormat = org.yccheok.jstock.gui.Utils.getCommonDateFormat();
-                    atoms.add(new Atom(object != null ? dateFormat.format(((Date)object).getTime()) : "", type));
+                    atoms.add(new Atom(object != null ? dateFormat.format(((Date) object).getTime()) : "", type));
                 } else {
                     // For fall below and rise above, null value is permitted.
                     // Use empty string to represent null value.
                     atoms.add(new Atom(object != null ? object : "", type));
                 }
             }
-            
+
             // Comment handling.
             if (commentableContainer != null) {
                 atoms.add(new Atom(commentableContainer.getCommentable(i).getComment(), guiBundleWrapper.getString("PortfolioManagementJPanel_Comment")));
             }
-            
+
             final Statement statement = new Statement(atoms);
 
             if (s.getType() != statement.getType()) {
@@ -777,9 +706,9 @@ public class Statements {
 
         // Any metadata? This is special hack since Android introduction.
         if (tableModel instanceof StockTableModel) {
-            s.metadatas.put("timestamp", Long.toString(((StockTableModel)tableModel).getTimestamp()));
+            s.metadatas.put("timestamp", Long.toString(((StockTableModel) tableModel).getTimestamp()));
         }
-        
+
         return s;
     }
 
@@ -788,10 +717,9 @@ public class Statements {
         final boolean isPenceToPoundConversionEnabled = jStockOptions.isPenceToPoundConversionEnabled();
 
         final GUIBundleWrapper guiBundleWrapper = GUIBundleWrapper.newInstance(languageIndependent ? GUIBundleWrapper.Language.INDEPENDENT : GUIBundleWrapper.Language.DEFAULT);
-        
-        final String[] tmp = {            
+
+        final String[] tmp = {
             guiBundleWrapper.getString("MainFrame_Code"),
-            guiBundleWrapper.getString("MainFrame_Symbol"),
             guiBundleWrapper.getString("PortfolioManagementJPanel_ReferenceDate"),
             guiBundleWrapper.getString("PortfolioManagementJPanel_Date"),
             guiBundleWrapper.getString("PortfolioManagementJPanel_Units"),
@@ -813,33 +741,31 @@ public class Statements {
             guiBundleWrapper.getString("PortfolioManagementJPanel_NetGainLossPercentage"),
             guiBundleWrapper.getString("PortfolioManagementJPanel_Comment")
         };
-        
+
         Statement.What what = Statement.what(Arrays.asList(tmp));
         final Statements statements = new Statements(what.type, what.guiBundleWrapper);
 
-        final Portfolio portfolio = (Portfolio)sellPortfolioTreeTableModel.getRoot();
+        final Portfolio portfolio = (Portfolio) sellPortfolioTreeTableModel.getRoot();
         final int summaryCount = portfolio.getChildCount();
 
         for (int i = 0; i < summaryCount; i++) {
             Object o = portfolio.getChildAt(i);
-            final TransactionSummary transactionSummary = (TransactionSummary)o;
-            
+            final TransactionSummary transactionSummary = (TransactionSummary) o;
+
             // Metadatas will be used to store TransactionSummary's comment.
             final String comment = transactionSummary.getComment().trim();
             if (comment.isEmpty() == false) {
-                final Stock stock = ((Transaction)transactionSummary.getChildAt(0)).getStock();
-                statements.metadatas.put(stock.code.toString(), comment);
+                final Code code = ((Transaction) transactionSummary.getChildAt(0)).getCode();
+                statements.metadatas.put(code.toString(), comment);
             }
 
             final int transactionCount = transactionSummary.getChildCount();
-            for (int j = 0; j < transactionCount; j++)
-            {
-                final Transaction transaction = (Transaction)transactionSummary.getChildAt(j);
-                final Stock stock = transaction.getStock();
+            for (int j = 0; j < transactionCount; j++) {
+                final Transaction transaction = (Transaction) transactionSummary.getChildAt(j);
                 final List<Atom> atoms = new ArrayList<Atom>();
-                atoms.add(new Atom(stock.code.toString(), tmp[0]));
-                atoms.add(new Atom(stock.symbol.toString(), tmp[1]));
-                
+                atoms.add(new Atom(transaction.getContract().getCode().toString(), tmp[0]));
+                atoms.add(new Atom("", tmp[1]));
+
                 DateFormat dateFormat = org.yccheok.jstock.gui.Utils.getCommonDateFormat();
                 final String referenceDateString = transaction.getReferenceDate() != null ? dateFormat.format(transaction.getReferenceDate().getTime()) : "";
                 atoms.add(new Atom(referenceDateString, tmp[2]));
@@ -848,59 +774,59 @@ public class Statements {
                 atoms.add(new Atom(transaction.getQuantity(), tmp[4]));
                 atoms.add(new Atom(transaction.getPrice(), tmp[5]));
                 atoms.add(new Atom(transaction.getReferencePrice(), tmp[6]));
-                
+
                 if (isPenceToPoundConversionEnabled == false) {
-                    atoms.add(new Atom(transaction.getTotal(), tmp[7]));                
+                    atoms.add(new Atom(transaction.getTotal(), tmp[7]));
                     atoms.add(new Atom(transaction.getReferenceTotal(), tmp[8]));
                 } else {
-                    atoms.add(new Atom(transaction.getTotal() / 100.0, tmp[7]));                
-                    atoms.add(new Atom(transaction.getReferenceTotal() / 100.0, tmp[8]));                    
+                    atoms.add(new Atom(transaction.getTotal() / 100.0, tmp[7]));
+                    atoms.add(new Atom(transaction.getReferenceTotal() / 100.0, tmp[8]));
                 }
-                
+
                 atoms.add(new Atom(transaction.getReferenceBroker(), tmp[9]));
                 atoms.add(new Atom(transaction.getReferenceClearingFee(), tmp[10]));
                 atoms.add(new Atom(transaction.getReferenceStampDuty(), tmp[11]));
-                
+
                 atoms.add(new Atom(sellPortfolioTreeTableModel.getGainLossPrice(transaction), tmp[12]));
-                
+
                 if (isPenceToPoundConversionEnabled == false) {
                     atoms.add(new Atom(sellPortfolioTreeTableModel.getGainLossValue(transaction), tmp[13]));
                 } else {
                     atoms.add(new Atom(sellPortfolioTreeTableModel.getGainLossValue(transaction) / 100.0, tmp[13]));
                 }
-                
+
                 atoms.add(new Atom(sellPortfolioTreeTableModel.getGainLossPercentage(transaction), tmp[14]));
                 atoms.add(new Atom(transaction.getBroker(), tmp[15]));
                 atoms.add(new Atom(transaction.getClearingFee(), tmp[16]));
                 atoms.add(new Atom(transaction.getStampDuty(), tmp[17]));
-                
+
                 if (isPenceToPoundConversionEnabled == false) {
-                    atoms.add(new Atom(transaction.getNetTotal(), tmp[18]));                
+                    atoms.add(new Atom(transaction.getNetTotal(), tmp[18]));
                     atoms.add(new Atom(sellPortfolioTreeTableModel.getNetGainLossValue(transaction), tmp[19]));
                 } else {
                     atoms.add(new Atom(transaction.getNetTotal() / 100.0, tmp[18]));
                     atoms.add(new Atom(sellPortfolioTreeTableModel.getNetGainLossValue(transaction) / 100.0, tmp[19]));
                 }
-                
+
                 atoms.add(new Atom(sellPortfolioTreeTableModel.getNetGainLossPercentage(transaction), tmp[20]));
                 atoms.add(new Atom(transaction.getComment(), tmp[21]));
-                
+
                 final Statement statement = new Statement(atoms);
-               
+
                 if (statements.getType() != statement.getType()) {
                     return UNKNOWN_STATEMENTS;
                 }
-                statements.statements.add(statement);                
+                statements.statements.add(statement);
             }
         }
         return statements;
     }
-    
+
     public boolean saveAsCSVFile(File file) {
         if (this.type == Statement.Type.Unknown) {
             return false;
         }
-        
+
         boolean status = false;
 
         FileOutputStream fileOutputStream = null;
@@ -909,16 +835,16 @@ public class Statements {
 
         try {
             fileOutputStream = new FileOutputStream(file);
-            outputStreamWriter = new OutputStreamWriter(fileOutputStream,  Charset.forName("UTF-8"));
+            outputStreamWriter = new OutputStreamWriter(fileOutputStream, Charset.forName("UTF-8"));
             csvwriter = new CSVWriter(outputStreamWriter);
-            
+
             for (Map.Entry<String, String> metadata : metadatas.entrySet()) {
                 String key = metadata.getKey();
                 String value = metadata.getValue();
                 String output = key + "=" + value;
                 csvwriter.writeNext(new String[]{output});
             }
-            
+
             // Do not obtain "type" through statements, as there is possible that 
             // statements is empty.
             final List<String> strings = Statement.typeToStrings(this.getType(), this.getGUIBundleWrapper());
@@ -941,9 +867,9 @@ public class Statements {
                 }
                 csvwriter.writeNext(datas);
             }
-            
+
             status = true;
-        }  catch (IOException ex) {
+        } catch (IOException ex) {
             log.error(null, ex);
         } finally {
             if (csvwriter != null) {
@@ -964,7 +890,7 @@ public class Statements {
         if (this.type == Statement.Type.Unknown) {
             return false;
         }
-        
+
         final HSSFWorkbook wb = new HSSFWorkbook();
         final HSSFSheet sheet = wb.createSheet(title);
 
@@ -998,11 +924,9 @@ public class Statements {
             status = true;
         } catch (FileNotFoundException ex) {
             log.error(null, ex);
-        }
-        catch (IOException ex) {
+        } catch (IOException ex) {
             log.error(null, ex);
-        }
-        finally {
+        } finally {
             org.yccheok.jstock.gui.Utils.close(fileOut);
         }
         return status;
@@ -1014,7 +938,7 @@ public class Statements {
         for (StatementsEx statementsEx : statementsExs) {
             final String title = statementsEx.title;
             final Statements statements = statementsEx.statements;
-            assert(statements != null);
+            assert (statements != null);
             if (statements.getType() == Statement.Type.Unknown) {
                 continue;
             }
@@ -1054,11 +978,9 @@ public class Statements {
             status = true;
         } catch (FileNotFoundException ex) {
             log.error(null, ex);
-        }
-        catch (IOException ex) {
+        } catch (IOException ex) {
             log.error(null, ex);
-        }
-        finally {
+        } finally {
             org.yccheok.jstock.gui.Utils.close(fileOut);
         }
         return status;
@@ -1078,20 +1000,20 @@ public class Statements {
     public int size() {
         return statements.size();
     }
-    
+
     public Map<String, String> getMetadatas() {
         return Collections.unmodifiableMap(metadatas);
     }
-    
+
     public Statement get(int index) {
         return statements.get(index);
     }
-    
+
     private final Statement.Type type;
     private final GUIBundleWrapper guiBundleWrapper;
     private final List<Statement> statements = new ArrayList<Statement>();
     // Use LinkedHashMap to ensure insertion order is maintained.
     private final Map<String, String> metadatas = new LinkedHashMap<String, String>();
     private static final Log log = LogFactory.getLog(Statements.class);
-    
+
 }

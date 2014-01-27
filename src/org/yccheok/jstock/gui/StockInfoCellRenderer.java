@@ -67,7 +67,7 @@ public class StockInfoCellRenderer extends javax.swing.JPanel implements ListCel
         final StockInfo stockInfo = (StockInfo)value;
         // getListCellRendererComponent will update internal state of JLabel.
         jLabel1.getListCellRendererComponent(list, stockInfo.code, index, isSelected, cellHasFocus);
-        jLabel2.getListCellRendererComponent(list, stockInfo.symbol, index, isSelected, cellHasFocus);
+        jLabel2.getListCellRendererComponent(list, stockInfo.getName(), index, isSelected, cellHasFocus);
 
         return this;
     }

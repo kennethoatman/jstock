@@ -125,7 +125,7 @@ public class YQLStockServer implements StockServer {
                         // We are so lucky! Yahoo returns us something.
                         Name = quote.Name.trim();
                     }
-                    final Stock stock = new Stock.Builder(Code.newInstance(quote.symbol.trim()), Symbol.newInstance(Name)).
+                    final Stock stock = new Stock.Builder(Code.newInstance(quote.symbol.trim())).
                             prevPrice(Utils.parseDouble(quote.PreviousClose)).
                             lastPrice(Utils.parseDouble(quote.LastTradePriceOnly)).
                             openPrice(Utils.parseDouble(quote.Open)).
@@ -161,7 +161,7 @@ public class YQLStockServer implements StockServer {
                         // We are so lucky! Yahoo returns us something.
                         Name = quote.Name.trim();
                     }
-                    final Stock stock = new Stock.Builder(Code.newInstance(quote.symbol.trim()), Symbol.newInstance(Name)).
+                    final Stock stock = new Stock.Builder(Code.newInstance(quote.symbol.trim())).
                             prevPrice(Utils.parseDouble(quote.PreviousClose)).
                             lastPrice(Utils.parseDouble(quote.LastTradePriceOnly)).
                             openPrice(Utils.parseDouble(quote.Open)).
@@ -191,7 +191,7 @@ public class YQLStockServer implements StockServer {
                 if (currentCodes.contains(code) == false) {
                     // If we are not getting enough stocks from YQL, we need
                     // to append empty stock into the returned result manually.
-                    stocks.add(org.yccheok.jstock.gui.Utils.getEmptyStock(code, Symbol.newInstance(code.toString())));
+                    stocks.add(org.yccheok.jstock.gui.Utils.getEmptyStock(code));
                 }
             }
         }

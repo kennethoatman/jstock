@@ -192,7 +192,7 @@ public class Utils {
             if (alerts.size() != stocks.size())
             {
                 for (Stock stock : stocks) {
-                    final Stock emptyStock = org.yccheok.jstock.gui.Utils.getEmptyStock(stock.code, stock.symbol);
+                    final Stock emptyStock = org.yccheok.jstock.gui.Utils.getEmptyStock(stock.code);
                     stockTableModel.addStock(emptyStock);
                 }
             }
@@ -202,7 +202,7 @@ public class Utils {
                 for(int i = 0; i < size; i++) {
                     final Stock stock = stocks.get(i);
                     final StockAlert alert = alerts.get(i);
-                    final Stock emptyStock = org.yccheok.jstock.gui.Utils.getEmptyStock(stock.code, stock.symbol);
+                    final Stock emptyStock = org.yccheok.jstock.gui.Utils.getEmptyStock(stock.code);
                     stockTableModel.addStock(emptyStock, alert);
                 }
             }      

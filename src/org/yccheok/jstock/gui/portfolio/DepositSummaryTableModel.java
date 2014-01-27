@@ -151,4 +151,14 @@ public class DepositSummaryTableModel extends AbstractTableModel implements Comm
     public String getLanguageIndependentColumnName(int columnIndex) {
         return languageIndependentColumnNames[columnIndex];
     }
+    
+    @Override
+    public int getMappedColumnCount() {
+        return columnNames.length;
+    }
+    
+    @Override
+    public int getMappedColumn(int i) {
+        return i;
+    }
 }

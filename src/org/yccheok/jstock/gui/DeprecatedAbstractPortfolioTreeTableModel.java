@@ -78,14 +78,14 @@ public abstract class DeprecatedAbstractPortfolioTreeTableModel extends DefaultT
         
         final int size = portfolio.getChildCount();
         
-        final Code code = transaction.getStock().code;
+        final Code code = transaction.getContract().getCode();
         
         TransactionSummary transactionSummary = null;
         
         for (int i = 0; i < size; i++) {
             TransactionSummary t = (TransactionSummary)portfolio.getChildAt(i);
             
-            if (((Transaction)t.getChildAt(0)).getStock().code.equals(code)) {
+            if (((Transaction)t.getChildAt(0)).getContract().getCode().equals(code)) {
                 transactionSummary = t;
                 break;
             }
@@ -112,14 +112,14 @@ public abstract class DeprecatedAbstractPortfolioTreeTableModel extends DefaultT
         
         final int size = portfolio.getChildCount();
         
-        final Code code = transaction.getStock().code;
+        final Code code = transaction.getContract().getCode();
         
         TransactionSummary transactionSummary = null;
         
         for (int i = 0; i < size; i++) {
             TransactionSummary t = (TransactionSummary)portfolio.getChildAt(i);
             
-            if (((Transaction)t.getChildAt(0)).getStock().code.equals(code)) {
+            if (((Transaction)t.getChildAt(0)).getContract().getCode().equals(code)) {
                 transactionSummary = t;
                 break;
             }

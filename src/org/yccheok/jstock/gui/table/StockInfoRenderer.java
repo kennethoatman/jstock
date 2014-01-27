@@ -13,6 +13,6 @@ import org.yccheok.jstock.engine.StockInfo;
 public class StockInfoRenderer extends GenericRenderer {
     @Override
     public void setValue(Object value) {
-        setText((value == null) ? "" : ((StockInfo)value).symbol.toString());
+        setText((value == null) ? "" : ((StockInfo)value).code.toString());
     }
 }

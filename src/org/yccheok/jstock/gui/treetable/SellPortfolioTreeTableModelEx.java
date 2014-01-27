@@ -285,7 +285,7 @@ public class SellPortfolioTreeTableModelEx extends AbstractPortfolioTreeTableMod
             
             switch(column) {
                 case 0:
-                    return ((Transaction)transactionSummary.getChildAt(0)).getStock().symbol;
+                    return ((Transaction)transactionSummary.getChildAt(0)).getCode();
                     
                 case 2:
                     return transactionSummary.getQuantity();
@@ -375,7 +375,7 @@ public class SellPortfolioTreeTableModelEx extends AbstractPortfolioTreeTableMod
             
             switch(column) {
                 case 0:
-                    return (transaction).getStock().symbol;
+                    return (transaction).getCode();
 
                 case 1:
                     return transaction.getDate();

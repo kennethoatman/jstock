@@ -16,7 +16,6 @@
  * with this program; if not, write to the Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
-
 package org.yccheok.jstock.gui;
 
 import java.util.*;
@@ -33,51 +32,55 @@ import org.yccheok.jstock.internationalization.GUIBundle;
  * @author yccheok
  */
 public class StockTableModel extends AbstractTableModelWithMemory implements CSVHelper {
-    /** Creates a new instance of StockTableModel */
+
+    /**
+     * Creates a new instance of StockTableModel
+     */
     public StockTableModel() {
         for (int i = 0; i < columnNames.length; i++) {
             columnNameMapping.put(columnNames[i], i);
         }
-                
+
     }
 
     @Override
     public Object getOldValueAt(int rowIndex, int columnIndex) {
         List<Object> stockInfo = oldTableModel.get(rowIndex);
-        
-        if (null == stockInfo) return null;
-        
-        return stockInfo.get(columnIndex);        
+
+        if (null == stockInfo) {
+            return null;
+        }
+
+        return stockInfo.get(columnIndex);
     }
 
-    @Override    
+    @Override
     public void clearOldValueAt(int rowIndex, int columnIndex) {
         List<Object> stockInfo = oldTableModel.get(rowIndex);
-        
-        if (null == stockInfo) return;
-        
+
+        if (null == stockInfo) {
+            return;
+        }
+
         stockInfo.set(columnIndex, null);
     }
 
     @Override
-    public Object getValueAt(int rowIndex, int columnIndex)
-    {
+    public Object getValueAt(int rowIndex, int columnIndex) {
         List<Object> stockInfo = tableModel.get(rowIndex);
         return stockInfo.get(columnIndex);
     }
-    
+
     @Override
-    public int getColumnCount()
-    {
+    public int getColumnCount() {
         return columnNames.length;
     }
-    
+
     @Override
-    public int getRowCount()
-    {
+    public int getRowCount() {
         return tableModel.size();
     }
-    
+
     @Override
     public String getColumnName(int col) {
         return columnNames[col];
@@ -95,35 +98,36 @@ public class StockTableModel extends AbstractTableModelWithMemory implements CSV
 
     @Override
     public void setValueAt(Object value, int row, int col) {
-        if (col == (columnClasses.length - 1))
-        {
-            final Double riseAbove = (Double)value;
+        if (col == (columnClasses.length - 1)) {
+            final Double riseAbove = (Double) value;
             final Code code = stocks.get(row).code;
             alerts.put(code, alerts.get(code).setRiseAbove(riseAbove));
             List<Object> oldInfos = oldTableModel.get(row);
-            if (oldInfos != null) oldInfos.set(col, tableModel.get(row).get(col));
+            if (oldInfos != null) {
+                oldInfos.set(col, tableModel.get(row).get(col));
+            }
             tableModel.get(row).set(col, riseAbove);
             fireTableCellUpdated(row, col);
             return;
-        }
-        else if (col == (columnClasses.length - 2))
-        {
-            final Double fallBelow = (Double)value;
+        } else if (col == (columnClasses.length - 2)) {
+            final Double fallBelow = (Double) value;
             final Code code = stocks.get(row).code;
             alerts.put(code, alerts.get(code).setFallBelow(fallBelow));
             List<Object> oldInfos = oldTableModel.get(row);
-            if (oldInfos != null) oldInfos.set(col, tableModel.get(row).get(col));
+            if (oldInfos != null) {
+                oldInfos.set(col, tableModel.get(row).get(col));
+            }
             tableModel.get(row).set(col, fallBelow);
             fireTableCellUpdated(row, col);
             return;
         }
-        
+
         throw new java.lang.UnsupportedOperationException();
     }
-    
+
     public void updateStock(Stock stock) {
-        assert(SwingUtilities.isEventDispatchThread());
-        
+        assert (SwingUtilities.isEventDispatchThread());
+
         final Integer row = codeToRow.get(stock.code);
 
         if (row != null) {
@@ -131,13 +135,13 @@ public class StockTableModel extends AbstractTableModelWithMemory implements CSV
             final StockAlert alert = alerts.get(stock.code);
             tableModel.set(row, stockToList(stock, alert));
             stocks.set(row, stock);
-            this.fireTableRowsUpdated(row, row);            
-        }        
+            this.fireTableRowsUpdated(row, row);
+        }
     }
 
     public void addStock(Stock stock, StockAlert alert) {
-        assert(SwingUtilities.isEventDispatchThread());
-        
+        assert (SwingUtilities.isEventDispatchThread());
+
         Integer row = codeToRow.get(stock.code);
         if (row == null) {
             tableModel.add(stockToList(stock, alert));
@@ -151,27 +155,29 @@ public class StockTableModel extends AbstractTableModelWithMemory implements CSV
     }
 
     public void addStock(Stock stock) {
-        assert(SwingUtilities.isEventDispatchThread());
-        
+        assert (SwingUtilities.isEventDispatchThread());
+
         this.addStock(stock, new StockAlert());
     }
-    
+
     public void clearAllStocks() {
-        assert(SwingUtilities.isEventDispatchThread());
-        
+        assert (SwingUtilities.isEventDispatchThread());
+
         final int size = stocks.size();
-        
-        if (size == 0) return;
-        
+
+        if (size == 0) {
+            return;
+        }
+
         tableModel.clear();
         oldTableModel.clear();
         stocks.clear();
         alerts.clear();
         codeToRow.clear();
-            
+
         this.fireTableRowsDeleted(0, size - 1);
     }
-    
+
     /**
      * Returns stock based on the row index.
      *
@@ -184,27 +190,31 @@ public class StockTableModel extends AbstractTableModelWithMemory implements CSV
 
     public Double getRiseAbove(Stock stock) {
         StockAlert stockAlert = this.alerts.get(stock.code);
-        if (stockAlert == null) return null;
+        if (stockAlert == null) {
+            return null;
+        }
         return stockAlert.riseAbove;
     }
 
     public Double getFallBelow(Stock stock) {
         StockAlert stockAlert = this.alerts.get(stock.code);
-        if (stockAlert == null) return null;
+        if (stockAlert == null) {
+            return null;
+        }
         return stockAlert.fallBelow;
     }
 
     public List<Stock> getStocks() {
         return Collections.unmodifiableList(stocks);
     }
-    
+
     public void removeRow(int row) {
-        assert(SwingUtilities.isEventDispatchThread());
-        
+        assert (SwingUtilities.isEventDispatchThread());
+
         oldTableModel.remove(row);
         List<Object> list = tableModel.remove(row);
         stocks.remove(row);
-        final Code code = (Code)list.get(0);
+        final Code code = (Code) list.get(0);
         alerts.remove(code);
         // 0 is stock code.
         codeToRow.remove(code);
@@ -214,14 +224,18 @@ public class StockTableModel extends AbstractTableModelWithMemory implements CSV
             Stock s = stocks.get(i);
             codeToRow.put(s.code, i);
         }
-        
+
         this.fireTableRowsDeleted(row, row);
     }
-    
+
     private List<Object> stockToList(Stock stock, StockAlert alert) {
         List<Object> list = new ArrayList<Object>();
         list.add(stock.code);
-        list.add(stock.symbol);
+        if (MainFrame.getInstance().getStockInfoDatabase() != null) {
+            list.add(MainFrame.getInstance().getStockInfoDatabase().codeToName(stock.code));
+        } else {
+            list.add("");
+        }
         list.add(stock.getPrevPrice());
         list.add(stock.getOpenPrice());
         list.add(stock.getLastPrice());
@@ -239,7 +253,7 @@ public class StockTableModel extends AbstractTableModelWithMemory implements CSV
         list.add(alert.riseAbove);
         return list;
     }
-    
+
     @Override
     public int findColumn(String columnName) {
         return columnNameMapping.get(columnName);
@@ -260,17 +274,17 @@ public class StockTableModel extends AbstractTableModelWithMemory implements CSV
         }
         return -1;
     }
-    
+
     public long getTimestamp() {
         return timestamp;
     }
-    
+
     public void setTimestamp(long timestamp) {
         this.timestamp = timestamp;
     }
-    
+
     private long timestamp = 0;
-    
+
     private final List<List<Object>> tableModel = new ArrayList<List<Object>>();
     private final List<List<Object>> oldTableModel = new ArrayList<List<Object>>();
     private final List<Stock> stocks = new ArrayList<Stock>();
@@ -283,7 +297,7 @@ public class StockTableModel extends AbstractTableModelWithMemory implements CSV
     private static final String[] languageIndependentColumnNames;
     private static final Class[] columnClasses = {
         Code.class,
-        Symbol.class,
+        String.class,
         Double.class,
         Double.class,
         Double.class,
@@ -305,7 +319,7 @@ public class StockTableModel extends AbstractTableModelWithMemory implements CSV
     static {
         final String[] tmp = {
             GUIBundle.getString("MainFrame_Code"),
-            GUIBundle.getString("MainFrame_Symbol"),
+            GUIBundle.getString("MainFrame_Name"),
             GUIBundle.getString("MainFrame_Prev"),
             GUIBundle.getString("MainFrame_Open"),
             GUIBundle.getString("MainFrame_Last"),
@@ -322,10 +336,10 @@ public class StockTableModel extends AbstractTableModelWithMemory implements CSV
             GUIBundle.getString("MainFrame_FallBelow"),
             GUIBundle.getString("MainFrame_RiseAbove")
         };
-        final GUIBundleWrapper guiBundleWrapper = GUIBundleWrapper.newInstance(Language.INDEPENDENT);        
+        final GUIBundleWrapper guiBundleWrapper = GUIBundleWrapper.newInstance(Language.INDEPENDENT);
         final String[] tmp2 = {
             guiBundleWrapper.getString("MainFrame_Code"),
-            guiBundleWrapper.getString("MainFrame_Symbol"),
+            guiBundleWrapper.getString("MainFrame_Name"),
             guiBundleWrapper.getString("MainFrame_Prev"),
             guiBundleWrapper.getString("MainFrame_Open"),
             guiBundleWrapper.getString("MainFrame_Last"),
@@ -342,7 +356,7 @@ public class StockTableModel extends AbstractTableModelWithMemory implements CSV
             guiBundleWrapper.getString("MainFrame_FallBelow"),
             guiBundleWrapper.getString("MainFrame_RiseAbove")
         };
-        
+
         columnNames = tmp;
         languageIndependentColumnNames = tmp2;
     }
@@ -350,5 +364,19 @@ public class StockTableModel extends AbstractTableModelWithMemory implements CSV
     @Override
     public String getLanguageIndependentColumnName(int columnIndex) {
         return languageIndependentColumnNames[columnIndex];
+    }
+
+    @Override
+    public int getMappedColumnCount() {
+        return columnNames.length - 1;
+    }
+    
+    @Override
+    public int getMappedColumn(int i) {
+        // Miss out 2nd column (name)
+        if (i == 0) {
+            return 0;
+        }
+        return i + 1;
     }
 }

@@ -140,7 +140,7 @@ public class Utils {
         for (int i = 0, ei = dividendSummary.size(); i < ei; i++) {
             Dividend dividend = dividendSummary.get(i);
             // We will only consider non-zero dividend.
-            if (dividend.amount > 0.0 && dividend.stockInfo.code.equals(code)) {
+            if (dividend.amount > 0.0 && dividend.code.equals(code)) {
                 if (latestDividend == null) {
                     latestDividend = dividend;
                 } else {
@@ -262,8 +262,8 @@ public class Utils {
     }
     
     public static boolean isTransactionWithEqualStockCode(Transaction t0, Transaction t1) {
-        final Code c0 = t0.getStock().code;
-        final Code c1 = t1.getStock().code;
+        final Code c0 = t0.getCode();
+        final Code c1 = t1.getCode();
         
         return c0.equals(c1);
     }
@@ -535,7 +535,7 @@ public class Utils {
     public static void removeMeaninglessRecords(DividendSummary dividendSummary) {
         for (int i = 0; i < dividendSummary.size(); i++) {
             Dividend dividend = dividendSummary.get(i);
-            if (dividend.amount <= 0.0 || dividend.stockInfo.code.toString().length() <= 0) {
+            if (dividend.amount <= 0.0 || dividend.code.toString().length() <= 0) {
                 // Remove meaningless record.
                 dividendSummary.remove(dividend);
                 i--;

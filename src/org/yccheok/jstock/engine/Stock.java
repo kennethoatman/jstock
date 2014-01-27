@@ -31,12 +31,8 @@ public class Stock {
     public static class Builder {
         // Required parameters.
         private final Code code;
-        private final Symbol symbol;
 
         // Optional parameters - initialized to default values.
-        private String name = "";
-        private Board board = Board.Unknown;
-        private Industry industry = Industry.Unknown;
         private double prevPrice = 0.0;
         private double openPrice = 0.0;
         private double lastPrice = 0.0;
@@ -63,33 +59,8 @@ public class Stock {
         private long timestamp = 0;
         private volatile boolean hasTimestampInitialized = false;
 
-        public Builder(Code code, Symbol symbol) {
+        public Builder(Code code) {
             this.code = code;
-            this.symbol = symbol;
-        }
-
-        /**
-         * @param name the name to set
-         */
-        public Builder name(String name) {
-            this.name = name;
-            return this;
-        }
-
-        /**
-         * @param board the board to set
-         */
-        public Builder board(Board board) {
-            this.board = board;
-            return this;
-        }
-
-        /**
-         * @param industry the industry to set
-         */
-        public Builder industry(Industry industry) {
-            this.industry = industry;
-            return this;
         }
 
         /**
@@ -282,10 +253,6 @@ public class Stock {
     private Stock(Builder builder) {
         this(
             builder.code,
-            builder.symbol,
-            builder.name,
-            builder.board,
-            builder.industry,
             builder.prevPrice,
             builder.openPrice,
             builder.lastPrice,
@@ -313,10 +280,6 @@ public class Stock {
     
     public Stock(
         Code code,
-        Symbol symbol,
-        String name,
-        Board board,
-        Industry industry,
         double prevPrice,
         double openPrice,
         double lastPrice,
@@ -343,10 +306,6 @@ public class Stock {
                 ) 
     {
         this.code = code;
-        this.symbol = symbol;
-        this.name = name;
-        this.board = board;
-        this.industry = industry;
         this.prevPrice = prevPrice;
         this.openPrice = openPrice;
         this.lastPrice = lastPrice;
@@ -375,10 +334,6 @@ public class Stock {
     // to construct Stock either through this constructor or Builder.
     public Stock(Stock stock) {
         this.code = stock.code;
-        this.symbol = stock.symbol;
-        this.name = stock.name;
-        this.board = stock.board;
-        this.industry = stock.industry;
         this.prevPrice = stock.prevPrice;
         this.openPrice = stock.openPrice;
         this.lastPrice = stock.lastPrice;
@@ -401,18 +356,6 @@ public class Stock {
         this.thirdSellPrice = stock.thirdSellPrice;
         this.thirdSellQuantity = stock.thirdSellQuantity;
         this.timestamp = stock.timestamp;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public Board getBoard() {
-        return board;
-    }
-    
-    public Industry getIndustry() {
-        return industry;
     }
 
     public double getPrevPrice() {
@@ -503,65 +446,19 @@ public class Stock {
     public long getTimestamp() {
         return timestamp;
     }
-    
+   
     /**
-     * Returns a clone copy of this stock with its name being modified to
-     * specified name. This stock remains unchanged, as it is designed as
+     * Returns a clone copy of this stock with its code being modified to
+     * specified code. This stock remains unchanged, as it is designed as
      * immutable class.
      *
-     * @param name Specified name to be modified to
-     * @return A clone copy of this stock with its name being modified to
-     * specified name.
+     * @param code Specified symbol to be modified to
+     * @return A clone copy of this stock with its code being modified to
+     * specified code.
      */
-    public Stock deriveStock(String name) {
+    public Stock deriveStock(Code code) {
         return new Stock(
-            this.code,
-            this.symbol,
-            name,
-            this.board,
-            this.industry,
-            this.prevPrice,
-            this.openPrice,
-            this.lastPrice,
-            this.highPrice,
-            this.lowPrice,
-            // TODO: CRITICAL LONG BUG REVISED NEEDED.
-            this.volume,
-            this.changePrice,
-            this.changePricePercentage,
-            this.lastVolume,
-            this.buyPrice,
-            this.buyQuantity,
-            this.sellPrice,
-            this.sellQuantity,
-            this.secondBuyPrice,
-            this.secondBuyQuantity,
-            this.secondSellPrice,
-            this.secondSellQuantity,
-            this.thirdBuyPrice,
-            this.thirdBuyQuantity,
-            this.thirdSellPrice,
-            this.thirdSellQuantity,
-            this.timestamp
-        );
-    }
-    
-    /**
-     * Returns a clone copy of this stock with its symbol being modified to
-     * specified symbol. This stock remains unchanged, as it is designed as
-     * immutable class.
-     *
-     * @param symbol Specified symbol to be modified to
-     * @return A clone copy of this stock with its symbol being modified to
-     * specified symbol.
-     */
-    public Stock deriveStock(Symbol symbol) {
-        return new Stock(
-            this.code,
-            symbol,
-            this.name,
-            this.board,
-            this.industry,
+            code,
             this.prevPrice,
             this.openPrice,
             this.lastPrice,
@@ -590,129 +487,10 @@ public class Stock {
 
     @Override
     public String toString() {
-        return symbol.toString();
+        return code.toString();
     }
-    
-    public enum Board {
-                                                // The following are naming conventions from CIMB :
-        Main("Main Board"),                     // Main
-        Second("Second Board"),                 // 2nd
-        Mesdaq("Mesdaq"),                       // MESDAQ
-        CallWarrant("Call Warrant"),            // ??
-        KualaLumpur("Kuala Lumpur"),
-        SES("SES"),                             // Singapore
-        Copenhagen("Copenhagen"),               // Denmark        
-        Paris("Paris"),                         // France
-        Xetra("Xetra"),                         // Germany
-        XETRA("XETRA"),
-        Munich("Munich"),
-        Stuttgart("Stuttgart"),
-        Berlin("Berlin"),
-        Hamburg("Hamburg"),
-        Dusseldorf("Dusseldorf"),
-        Frankfurt("Frankfurt"),
-        Hannover("Hannover"),
-        Milan("Milan"),                         // Italy
-        Oslo("Oslo"),                           // Norway
-        Madrid("Madrid"),                       // Spain
-        MCE("MCE"),
-        MercadoContinuo("Mercado Continuo"),
-        Stockholm("Stockholm"),                 // Sweden
-        FSI("FSI"),                             // UK
-        London("London"),
-        NasdaqSC("NasdaqSC"),                   // US
-        DJI("DJI"),
-        NasdaqNM("NasdaqNM"),
-        NYSE("NYSE"),
-        Nasdaq("Nasdaq"),
-        AMEX("AMEX"),
-        PinkSheet("Pink Sheet"),
-        Sydney("Sydney"),                       // Australia
-        ASX("ASX"),
-        Vienna("Vienna"),                       // Austria
-        Brussels("Brussels"),                   // Belgium
-        Toronto("Toronto"),                     // Canada
-        HKSE("HKSE"),                           // Hong Kong
-        Jakarta("Jakarta"),                     // Indonesia
-        KSE("KSE"),                             // Korea
-        KOSDAQ("KOSDAQ"),
-        Amsterdam("Amsterdam"),                 // Netherlands
-        ENX("ENX"),                             // Portugal
-        Lisbon("Lisbon"),
-        VTX("VTX"),                             // Switzerland
-        Virt_X("Virt-X"),
-        Switzerland("Switzerland"),
-        Taiwan("Taiwan"),                       // Taiwan
-        BOM("Bombay"),                          // India
-        NSE("NSE"),
-
-        NZSX("NZ Stock Market"),                // New Zealand
-        NZDX("NZ Debt Market"),
-        NZAX("NZ Alternative Market"),
-        
-        TASE("Tel Aviv Stock Exchange"),        // Israel
-        
-        UserDefined("User Defined"),
-        Unknown("Unknown");
-        
-        private final String name;
-
-        Board(String name) {
-            this.name = name;
-        }
-        
-        @Override
-        public String toString() {
-            return name;
-        }
-        
-        public String toOriginalString() {
-            return super.toString();
-        }        
-    }
-        
-    public enum Industry {
-                                                    // The following are naming conventions from CIMB :
-        ConsumerProducts("Consumer Products"),      // CONSUMER
-        IndustrialProducts("Industrial Products"),  // IND-PROD
-        Construction("Construction"),               // CONSTRUCTN
-        TradingServices("Trading / Services"),      // TRAD/SERV
-        Technology("Technology"),                   // TECHNOLOGY
-        Infrastructure("Infrastructure"),           // IPC
-        Finance("Finance"),                         // FINANCE
-        Hotels("Hotels"),                           // HOTELS
-        Properties("Properties"),                   // PROPERTIES 
-        Plantation("Plantation"),                   // PLANTATION
-        Mining("Mining"),                           // MINING
-        Trusts("Trusts"),                           // REITS
-        CloseEndFund("Close-End Fund"),             // CLOSED/FUND 
-        ETF("ETF"),                                 // ETF
-        Loans("Loans"),                             // LOANS
-        CallWarrant("Call Warrant"),                // CALL-WARR
-        UserDefined("User Defined"),
-        Unknown("Unknown");
-        
-        private final String name;
-
-        Industry(String name) {
-            this.name = name;
-        }
-        
-        @Override
-        public String toString() {
-            return name;
-        }
-        
-        public String toOriginalString() {
-            return super.toString();
-        }
-    }
-            
+   
     public final Code code;
-    public final Symbol symbol;
-    private final String name;
-    private final Board board;
-    private final Industry industry;
     private final double prevPrice;
     private final double openPrice;
     private final double lastPrice;    

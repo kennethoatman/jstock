@@ -112,7 +112,7 @@ public class YahooDividendServer implements DividendServer {
             }
             
             Dividend dividend = new Dividend(
-                    StockInfo.newInstance(code, Symbol.newInstance(code.toString())),
+                    code,
                     amount,
                     simpleDate
             );

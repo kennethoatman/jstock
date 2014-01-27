@@ -90,12 +90,16 @@ public class TSTSearchEngine<E> implements SearchEngine<E> {
         return null;
     }
     
+    public final void put(E value) {
+        this.put(value, value.toString());
+    }
+    
     /**
      * Insert an element into this search engine.
      * @param value Element to be inserted
      */
-    public final void put(E value) {
-        final String mapKey = value.toString().toUpperCase();
+    public final void put(E value, String key) {
+        final String mapKey = key.toUpperCase();
         tst.put(mapKey, mapKey);
 
         List<E> list = map.get(mapKey);

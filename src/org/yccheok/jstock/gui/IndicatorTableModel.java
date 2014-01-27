@@ -143,7 +143,11 @@ public class IndicatorTableModel extends AbstractTableModelWithMemory implements
         assert(stock != null);
         
         list.add(stock.code);
-        list.add(stock.symbol);
+        if (MainFrame.getInstance().getStockInfoDatabase() != null) {
+            list.add(MainFrame.getInstance().getStockInfoDatabase().codeToName(stock.code));
+        } else {
+            list.add("");
+        }
         list.add(stock.getPrevPrice());
         list.add(stock.getOpenPrice());
         list.add(stock.getLastPrice());
@@ -238,7 +242,7 @@ public class IndicatorTableModel extends AbstractTableModelWithMemory implements
     private static final Class[] columnClasses = {
         String.class,
         Code.class,
-        Symbol.class,
+        String.class,
         Double.class,
         Double.class,
         Double.class,
@@ -261,7 +265,7 @@ public class IndicatorTableModel extends AbstractTableModelWithMemory implements
         final String[] tmp = {
             GUIBundle.getString("IndicatorScannerJPanel_Indicator"),
             GUIBundle.getString("MainFrame_Code"),
-            GUIBundle.getString("MainFrame_Symbol"),
+            GUIBundle.getString("MainFrame_Name"),
             GUIBundle.getString("MainFrame_Prev"),
             GUIBundle.getString("MainFrame_Open"),
             GUIBundle.getString("MainFrame_Last"),
@@ -282,7 +286,7 @@ public class IndicatorTableModel extends AbstractTableModelWithMemory implements
         final String[] tmp2 = {
             guiBundleWrapper.getString("IndicatorScannerJPanel_Indicator"),
             guiBundleWrapper.getString("MainFrame_Code"),
-            guiBundleWrapper.getString("MainFrame_Symbol"),
+            guiBundleWrapper.getString("MainFrame_Name"),
             guiBundleWrapper.getString("MainFrame_Prev"),
             guiBundleWrapper.getString("MainFrame_Open"),
             guiBundleWrapper.getString("MainFrame_Last"),
@@ -307,5 +311,19 @@ public class IndicatorTableModel extends AbstractTableModelWithMemory implements
     @Override
     public String getLanguageIndependentColumnName(int columnIndex) {
         return languageIndependentColumnNames[columnIndex];
+    }
+    
+       @Override
+    public int getMappedColumnCount() {
+        return columnNames.length - 1;
+    }
+    
+    @Override
+    public int getMappedColumn(int i) {
+        // Miss out 3rd column (name)
+        if (i < 2) {
+            return i;
+        }
+        return i + 1;
     }
 }

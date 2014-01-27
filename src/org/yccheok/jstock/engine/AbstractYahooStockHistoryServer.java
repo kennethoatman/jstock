@@ -81,22 +81,6 @@ public abstract class AbstractYahooStockHistoryServer implements StockHistorySer
             return false;
         }
 
-        Symbol symbol = Symbol.newInstance(code.toString());
-        String name = symbol.toString();
-        Stock.Board board = Stock.Board.Unknown;
-        Stock.Industry industry = Stock.Industry.Unknown;
-
-        try {
-            Stock stock = getStockServer().getStock(code);
-            symbol = stock.symbol;
-            name = stock.getName();
-            board = stock.getBoard();
-            industry = stock.getIndustry();
-        }
-        catch (StockNotFoundException exp) {
-            log.error(null, exp);
-        }
-
         double previousClosePrice = Double.MAX_VALUE;
 
         for (int i = length - 1; i > 0; i--)
@@ -144,10 +128,6 @@ public abstract class AbstractYahooStockHistoryServer implements StockHistorySer
 
             Stock stock = new Stock(
                     code,
-                    symbol,
-                    name,
-                    board,
-                    industry,
                     prevPrice,
                     openPrice,
                     closePrice, /* Last Price. */

@@ -175,10 +175,7 @@ public class YahooStockFormat implements StockFormat {
             final int length = fields.length;
             
             Code code = null;
-            Symbol symbol = null;
             String name = null;
-            Stock.Board board = null;
-            Stock.Industry industry = null;
             double prevPrice = 0.0;
             double openPrice = 0.0;
             double lastPrice = 0.0;    
@@ -208,19 +205,7 @@ public class YahooStockFormat implements StockFormat {
                 
                 if (length < 2) break; name = quotePattern.matcher(fields[1]).replaceAll("").trim();
 
-                // We use name as symbol, to make it more readable.
-                symbol = Symbol.newInstance(name.toString());
-
                 if (length < 3) break;
-                
-                try {
-                    board = Stock.Board.valueOf(quotePattern.matcher(fields[2]).replaceAll("").trim());
-                }
-                catch (java.lang.IllegalArgumentException exp) {
-                    board = Stock.Board.Unknown;
-                }
-                
-                industry = Stock.Industry.Unknown;
                 
                 if (length < 5) break;
                 try { prevPrice = Double.parseDouble(fields[4]); } catch (NumberFormatException exp) {}
@@ -279,7 +264,7 @@ public class YahooStockFormat implements StockFormat {
                 break;
             } while(true);
             
-            if (code == null || symbol == null || name == null || board == null || industry == null) {
+            if (code == null) {
                 continue;
             }
 
@@ -316,10 +301,6 @@ public class YahooStockFormat implements StockFormat {
             
             Stock stock = new Stock(
                     code,
-                    symbol,
-                    name,
-                    board,
-                    industry,
                     prevPrice,
                     openPrice,
                     lastPrice,

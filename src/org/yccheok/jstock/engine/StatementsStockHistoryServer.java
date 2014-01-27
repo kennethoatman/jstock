@@ -43,17 +43,9 @@ public class StatementsStockHistoryServer implements StockHistoryServer {
             double changePricePercentage = ((previousClosePrice == Double.MAX_VALUE) || (previousClosePrice == 0.0)) ? 0 : changePrice / previousClosePrice * 100.0;
             
             Code code = Code.newInstance(metadatas.get("code"));
-            Symbol symbol = Symbol.newInstance(metadatas.get("symbol"));
-            String name = metadatas.get("name");
-            Stock.Board board = Stock.Board.valueOf(metadatas.get("board"));
-            Stock.Industry industry = Stock.Industry.valueOf(metadatas.get("industry"));
             
             Stock stock = new Stock(
                     code,
-                    symbol,
-                    name,
-                    board,
-                    industry,
                     prevPrice,
                     openPrice,
                     closePrice, /* Last Price. */

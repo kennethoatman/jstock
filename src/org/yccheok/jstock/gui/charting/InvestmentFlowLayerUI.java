@@ -47,7 +47,7 @@ import org.jfree.data.time.TimeSeries;
 import org.jfree.data.time.TimeSeriesCollection;
 import org.jfree.data.time.TimeSeriesDataItem;
 import org.jfree.ui.RectangleEdge;
-import org.yccheok.jstock.engine.Stock;
+import org.yccheok.jstock.engine.Code;
 import org.yccheok.jstock.engine.StockInfo;
 import org.yccheok.jstock.gui.JStockOptions;
 import org.yccheok.jstock.gui.MainFrame;
@@ -304,25 +304,25 @@ public class InvestmentFlowLayerUI<V extends javax.swing.JComponent> extends Abs
             // Buy, Sell or Dividend only.
             if (activity.getType() == Activity.Type.Buy) {
                 final double quantity = (Double)activity.get(Activity.Param.Quantity);
-                final Stock stock = (Stock)activity.get(Activity.Param.Stock);
+                final Code code = (Code)activity.get(Activity.Param.Code);
                 this.ROIParams.add(GUIBundle.getString("InvestmentFlowLayerUI_Own") + " " + 
-                        org.yccheok.jstock.portfolio.Utils.toQuantity(quantity) + " " + stock.symbol);
-                final double amount = convertToPoundIfNecessary(quantity * this.investmentFlowChartJDialog.getStockPrice(stock.code));
+                        org.yccheok.jstock.portfolio.Utils.toQuantity(quantity) + " " + code);
+                final double amount = convertToPoundIfNecessary(quantity * this.investmentFlowChartJDialog.getStockPrice(code));
                 this.totalROIValue += amount;
                 this.ROIValues.add(org.yccheok.jstock.portfolio.Utils.toCurrencyWithSymbol(DecimalPlaces.Three, amount));
             }
             else if (activity.getType() == Activity.Type.Sell) {
                 final double quantity = (Double)activity.get(Activity.Param.Quantity);
-                final Stock stock = (Stock)activity.get(Activity.Param.Stock);
+                final Code code = (Code)activity.get(Activity.Param.Code);
                 this.ROIParams.add(activity.getType() + " " +
-                        org.yccheok.jstock.portfolio.Utils.toQuantity(quantity) + " " + stock.symbol);
+                        org.yccheok.jstock.portfolio.Utils.toQuantity(quantity) + " " + code);
                 final double amount = convertToPoundIfNecessary(activity.getAmount());
                 this.totalROIValue += amount;
                 this.ROIValues.add(org.yccheok.jstock.portfolio.Utils.toCurrencyWithSymbol(DecimalPlaces.Three, amount));
             }
             else if (activity.getType() == Activity.Type.Dividend) {
-                final StockInfo stockInfo = (StockInfo)activity.get(Activity.Param.StockInfo);
-                this.ROIParams.add(activity.getType() + " " + stockInfo.symbol);
+                final StockInfo stockInfo = (StockInfo)activity.get(Activity.Param.Code);
+                this.ROIParams.add(activity.getType() + " " + stockInfo.code);
                 final double amount = activity.getAmount();
                 this.totalROIValue += amount;
                 this.ROIValues.add(org.yccheok.jstock.portfolio.Utils.toCurrencyWithSymbol(DecimalPlaces.Three, amount));
@@ -418,7 +418,7 @@ public class InvestmentFlowLayerUI<V extends javax.swing.JComponent> extends Abs
             final Activity activity = activities.get(i);
             // Buy only.
             this.investParams.add(activity.getType() + " " + 
-                    org.yccheok.jstock.portfolio.Utils.toQuantity(activity.get(Activity.Param.Quantity)) + " " + ((Stock)activity.get(Activity.Param.Stock)).symbol);
+                    org.yccheok.jstock.portfolio.Utils.toQuantity(activity.get(Activity.Param.Quantity)) + " " + activity.get(Activity.Param.Code));
 
             if (activity.getType() == Activity.Type.Buy) {
                 final double amount = convertToPoundIfNecessary(activity.getAmount());

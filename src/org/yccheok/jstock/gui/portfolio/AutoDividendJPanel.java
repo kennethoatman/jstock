@@ -42,7 +42,7 @@ public class AutoDividendJPanel extends javax.swing.JPanel {
         
         this.autoDividendJDialog = autoDividendJDialog;
         
-        jCheckBox2.setText(dividends.get(0).stockInfo.symbol.toString());
+        jCheckBox2.setText(dividends.get(0).code.toString());
         
         for (Dividend dividend : dividends) {
             AutoDividendRowJPanel autoDividendRowJPanel = new AutoDividendRowJPanel(this, dividend);

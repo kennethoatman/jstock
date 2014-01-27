@@ -1310,40 +1310,16 @@ public class ChartJDialog extends javax.swing.JDialog {
         final int num = stockHistoryServer.size();
         final Stock stock = stockHistoryServer.getStock(stockHistoryServer.getTimestamp(num - 1));
 
-        if (org.yccheok.jstock.engine.Utils.isNameImmutable()) {
-            final StockNameDatabase stockNameDatabase = MainFrame.getInstance().getStockNameDatabase();
-            if (stockNameDatabase != null) {
-                final String name = stockNameDatabase.codeToName(stock.code);
-                if (name != null) {
-                    return name;
-                }
+        // We just get this from the offline database.
+        final StockInfoDatabase stockInfoDatabase = MainFrame.getInstance().getStockInfoDatabase();
+        if (stockInfoDatabase != null) {
+            final StockInfo s = stockInfoDatabase.codeToStockInfo(stock.code);
+            if (s != null) {
+                return s.getName();
             }
         }
-
-        final String name = stock.getName();
-        // For unknown reason, server may return us empty stock name.
-        if (name.isEmpty()) {
-            final Symbol symbol = stock.symbol;
-            if (false == symbol.toString().isEmpty()) {
-                // Luckly. The symbol is not empty. Use it as replacement to
-                // name.
-                return symbol.toString();
-            }
-            // Symbol from server is empty. We need to ask help from offline
-            // database.
-            final StockInfoDatabase stockInfoDatabase = MainFrame.getInstance().getStockInfoDatabase();
-            if (stockInfoDatabase != null) {
-                final Symbol s = stockInfoDatabase.codeToSymbol(stock.code);
-                if (s != null) {
-                    // Use symbol as replacement if possible.
-                    return s.toString();
-                }
-            }
-            // If not, we will just apply code as replacement.
-            return stock.code.toString();
-        }
-
-        return name;
+        // If not, we will just apply code as replacement.
+        return stock.code.toString();
     }
 
     /**

@@ -185,7 +185,7 @@ public class IndicatorPanel extends JPanel {
         jButton4 = new javax.swing.JButton();
         jButton6 = new javax.swing.JButton();
         jPanel7 = new javax.swing.JPanel();
-        objectInspectorJPanel = new ObjectInspectorJPanel(new MutableStock(Utils.getEmptyStock(Code.newInstance(""), Symbol.newInstance(""))));
+        objectInspectorJPanel = new ObjectInspectorJPanel(new MutableStock(Utils.getEmptyStock(Code.newInstance(""))));
 
         jPanel10.setLayout(new java.awt.BorderLayout());
 
@@ -1339,7 +1339,7 @@ public class IndicatorPanel extends JPanel {
             tmp.cancel(true);
         }
 
-        stockTask = new StockTask(stockInfo.code, stockInfo.symbol);
+        stockTask = new StockTask(stockInfo.code);
         stockTask.execute();
     }
 
@@ -1349,14 +1349,18 @@ public class IndicatorPanel extends JPanel {
             @Override
             public void update(AutoCompleteJComboBox subject, MatchType matchType) {
                 assert(matchType != null);
-                Code code = matchType.getCode();
-                final Symbol symbol = Symbol.newInstance(matchType.n);
-                final StockInfo stockInfo = StockInfo.newInstance(code, symbol);
                 
-                addStockInfoFromAutoCompleteJComboBox(stockInfo);
+                // CK_FIXME 
+                assert(false);
+ 
+                //Code code = matchType.getCode();
+                //final Symbol symbol = Symbol.newInstance(matchType.n);
+                //final StockInfo stockInfo = StockInfo.newInstance(code, symbol);
+                
+                //addStockInfoFromAutoCompleteJComboBox(stockInfo);
 
                 // Remember to update our offline database as well.
-                MainFrame.getInstance().addUserDefinedStockInfo(stockInfo);                
+                //MainFrame.getInstance().addUserDefinedStockInfo(stockInfo);                
             }                
         };
     }
@@ -1367,16 +1371,20 @@ public class IndicatorPanel extends JPanel {
             @Override
             public void update(AutoCompleteJComboBox subject, ResultType resultType) {
                 assert(resultType != null);
-                // Symbol from Yahoo means Code in JStock.
-                final Code code = Code.newInstance(resultType.symbol);
-                // Name from Yahoo means Symbol in JStock.
-                final Symbol symbol = Symbol.newInstance(resultType.name);
-                final StockInfo stockInfo = StockInfo.newInstance(code, symbol);
 
-                addStockInfoFromAutoCompleteJComboBox(stockInfo);
+                assert(false);
+                // CK_FIXME used to add to stockInfoDatabase....should only allow codes that are in there?
+ 
+                // Symbol from Yahoo means Code in JStock.
+                //final Code code = Code.newInstance(resultType.symbol);
+                // Name from Yahoo means Symbol in JStock.
+                //final Symbol symbol = Symbol.newInstance(resultType.name);
+                //final StockInfo stockInfo = StockInfo.newInstance(code, symbol);
+
+                //addStockInfoFromAutoCompleteJComboBox(stockInfo);
 
                 // Remember to update our offline database as well.
-                MainFrame.getInstance().addUserDefinedStockInfo(stockInfo);
+                //MainFrame.getInstance().getStockInfoDatabase().  addUserDefinedStockInfo(stockInfo);
             }
         };
     }
@@ -1393,11 +1401,9 @@ public class IndicatorPanel extends JPanel {
 
     private class StockTask extends SwingWorker<Boolean, Stock> {        
         final Code code;
-        final Symbol symbol;
         
-        public StockTask(Code code, Symbol symbol) {
+        public StockTask(Code code) {
             this.code = code;
-            this.symbol = symbol;
         }
         
         @Override
@@ -1463,33 +1469,8 @@ public class IndicatorPanel extends JPanel {
                 final MainFrame m = MainFrame.getInstance();
                  
                 if (stock != null) {
-                    Stock new_stock = stock;
 
-                    // Special handling for China stock market.
-                    // Also, sometimes for other countries, Yahoo will return
-                    // empty string for their symbol. We will fix it through
-                    // offline database.
-                    if (org.yccheok.jstock.engine.Utils.isSymbolImmutable() || new_stock.symbol.toString().isEmpty()) {
-                        final StockInfoDatabase stockInfoDatabase = m.getStockInfoDatabase();
-                        if (stockInfoDatabase != null) {
-                            final Symbol _symbol = stockInfoDatabase.codeToSymbol(new_stock.code);
-                            if (_symbol != null) {
-                                new_stock = new_stock.deriveStock(_symbol);
-                            }
-                        }
-                    }
-
-                    if (org.yccheok.jstock.engine.Utils.isNameImmutable()) {
-                        final StockNameDatabase stockNameDatabase = m.getStockNameDatabase();
-                        if (stockNameDatabase != null) {
-                            final String _name = stockNameDatabase.codeToName(new_stock.code);
-                            if (_name != null) {
-                                new_stock = new_stock.deriveStock(_name);
-                            }
-                        }
-                    }
-
-                    ((ObjectInspectorJPanel)objectInspectorJPanel).setBean(new MutableStock(new_stock));
+                    ((ObjectInspectorJPanel)objectInspectorJPanel).setBean(new MutableStock(stock));
 
                     if (m != null) {
                         m.setStatusBar(false, GUIBundle.getString("IndicatorPanel_StockSampleDataRetrievedSuccess"));

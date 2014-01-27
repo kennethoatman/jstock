@@ -25,4 +25,6 @@ package org.yccheok.jstock.file;
  */
 public interface CSVHelper {
     public String getLanguageIndependentColumnName(int columnIndex);
+    public int getMappedColumnCount();
+    public int getMappedColumn(int i);
 }

@@ -32,8 +32,8 @@ import org.apache.commons.httpclient.*;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.codehaus.jackson.map.ObjectMapper;
-import org.yccheok.jstock.engine.Stock.Board;
-import org.yccheok.jstock.engine.Stock.Industry;
+import org.yccheok.jstock.engine.StockInfo.Board;
+import org.yccheok.jstock.engine.StockInfo.Industry;
 import org.yccheok.jstock.file.Statements;
 import org.yccheok.jstock.gui.MainFrame;
 import org.yccheok.jstock.gui.Pair;
@@ -190,10 +190,6 @@ public class Utils {
             }
             int code_index = -1;
             int symbol_index = -1;
-            // Name, board and industry information is optional.
-            int name_index = -1;            
-            int board_index = -1;
-            int industry_index = -1;
             
             boolean success_index = false;
             // Search for the indecies for code, symbol and name.
@@ -203,15 +199,9 @@ public class Utils {
                     code_index = index;
                 } else if (0 == type.compareToIgnoreCase("symbol")) {
                     symbol_index = index;
-                } else if (0 == type.compareToIgnoreCase("name")) {
-                    name_index = index;
-                } else if (0 == type.compareToIgnoreCase("board")) {
-                    board_index = index;
-                } else if (0 == type.compareToIgnoreCase("industry")) {
-                    industry_index = index;
                 }
 
-                if (code_index != -1 && symbol_index != -1 && name_index != -1 && board_index != -1 && industry_index != -1) {
+                if (code_index != -1 && symbol_index != -1) {
                     // All found. Early quit.
                     break;
                 }
@@ -237,25 +227,8 @@ public class Utils {
                 }
                 final String code = nextLine[code_index];
                 final String symbol = nextLine[symbol_index];
-                final String name = name_index == -1 ? "" : nextLine[name_index];
-                final String _board = board_index == -1 ? "Unknown" : nextLine[board_index];
-                final String _industry = industry_index == -1 ? "Unknown" : nextLine[industry_index];
-                Board board;
-                Industry industry;
-                try {
-                    board = Board.valueOf(_board);
-                } catch (IllegalArgumentException exp) {
-                    log.error(null, exp);
-                    board = Board.Unknown;
-                }
-                try {
-                    industry = Industry.valueOf(_industry);
-                } catch (IllegalArgumentException exp) {
-                    log.error(null, exp);
-                    industry = Industry.Unknown;
-                }
                 
-                final Stock stock = new Stock.Builder(Code.newInstance(code), Symbol.newInstance(symbol)).name(name).board(board).industry(industry).build();
+                final Stock stock = new Stock.Builder(Code.newInstance(code)).build();
                 stocks.add(stock);
             }
         } catch (IOException ex) {
@@ -274,32 +247,32 @@ public class Utils {
         return stocks;
     }
     
-    public static boolean migrateXMLToCSVDatabases(String srcBaseDirectory, String destBaseDirectory) {
-        boolean result = true;
-        for (Country country : Country.values()) {
-            final File userDefinedDatabaseXMLFile = new File(srcBaseDirectory + country + File.separator + "database" + File.separator + "user-defined-database.xml");
-            final File userDefinedDatabaseCSVFile = new File(destBaseDirectory + country + File.separator + "database" + File.separator + "user-defined-database.csv");
-            
-            final java.util.List<Pair<Code, Symbol>> pairs = org.yccheok.jstock.gui.Utils.fromXML(java.util.List.class, userDefinedDatabaseXMLFile);            
-            if (pairs != null && !pairs.isEmpty()) {
-                final Statements statements = Statements.newInstanceFromUserDefinedDatabase(pairs);
-                boolean r = statements.saveAsCSVFile(userDefinedDatabaseCSVFile);
-                if (r) {
-                    userDefinedDatabaseXMLFile.delete();
-                }  
-                result = r & result;
-            } else {
-                userDefinedDatabaseXMLFile.delete();
-            }
-
-            // Delete these old XML files. We can re-generate new CSV from database.zip.
-            new File(srcBaseDirectory + country + File.separator + "database" + File.separator + "stock-name-database.xml").delete();
-            new File(destBaseDirectory + country + File.separator + "database" + File.separator + "stock-info-database.xml").delete();
-            new File(destBaseDirectory + country + File.separator + "database" + File.separator + "stockcodeandsymboldatabase.xml").delete();
-        }
-        return result;
-    }
-    
+//    public static boolean migrateXMLToCSVDatabases(String srcBaseDirectory, String destBaseDirectory) {
+//        boolean result = true;
+//        for (Country country : Country.values()) {
+//            final File userDefinedDatabaseXMLFile = new File(srcBaseDirectory + country + File.separator + "database" + File.separator + "user-defined-database.xml");
+//            final File userDefinedDatabaseCSVFile = new File(destBaseDirectory + country + File.separator + "database" + File.separator + "user-defined-database.csv");
+//            
+//            final java.util.List<Pair<Code, Symbol>> pairs = org.yccheok.jstock.gui.Utils.fromXML(java.util.List.class, userDefinedDatabaseXMLFile);            
+//            if (pairs != null && !pairs.isEmpty()) {
+//                final Statements statements = Statements.newInstanceFromUserDefinedDatabase(pairs);
+//                boolean r = statements.saveAsCSVFile(userDefinedDatabaseCSVFile);
+//                if (r) {
+//                    userDefinedDatabaseXMLFile.delete();
+//                }  
+//                result = r & result;
+//            } else {
+//                userDefinedDatabaseXMLFile.delete();
+//            }
+//
+//            // Delete these old XML files. We can re-generate new CSV from database.zip.
+//            new File(srcBaseDirectory + country + File.separator + "database" + File.separator + "stock-name-database.xml").delete();
+//            new File(destBaseDirectory + country + File.separator + "database" + File.separator + "stock-info-database.xml").delete();
+//            new File(destBaseDirectory + country + File.separator + "database" + File.separator + "stockcodeandsymboldatabase.xml").delete();
+//        }
+//        return result;
+//    }
+//    
     private static final List<Index> australiaIndices = new ArrayList<Index>();
     private static final List<Index> austriaIndices = new ArrayList<Index>();
     private static final List<Index> belgiumIndices = new ArrayList<Index>();
@@ -508,32 +481,6 @@ public class Utils {
      * @return Best search engine based on current selected country.
      */
     public static boolean isPinyinTSTSearchEngineRequiredForSymbol() {
-        final Country country = MainFrame.getInstance().getJStockOptions().getCountry();
-        return (country == Country.China || country == Country.Taiwan);
-    }
-
-    /**
-     * Returns <code>true</code> if we should maintain the symbol as database's,
-     * even the symbol provided by stock server is different from our database.
-     * This happens when our symbol in database is Chinese, but the symbol
-     * returned by stock server is in English.
-     * 
-     * @return <code>true</code> if we should maintain the symbol as database's.
-     */
-    public static boolean isSymbolImmutable() {
-        final Country country = MainFrame.getInstance().getJStockOptions().getCountry();
-        return (country == Country.China || country == Country.Taiwan);
-    }
-
-    /**
-     * Returns <code>true</code> if we should maintain the name as database's,
-     * even the name provided by stock server is different from our database.
-     * This happens when our name in database is Chinese, but the name returned
-     * by stock server is in English.
-     *
-     * @return <code>true</code> if we should maintain the name as database's.
-     */
-    public static boolean isNameImmutable() {
         final Country country = MainFrame.getInstance().getJStockOptions().getCountry();
         return (country == Country.China || country == Country.Taiwan);
     }

@@ -525,7 +525,7 @@ public class DividendSummaryJDialog extends javax.swing.JDialog implements Prope
         }
 
         int viewIndex = this.jTable1.convertColumnIndexToView(1);
-        String string = ((StockInfo)jTable1.getValueAt(jTable1.getSelectedRow(), viewIndex)).symbol.toString();
+        String string = ((StockInfo)jTable1.getValueAt(jTable1.getSelectedRow(), viewIndex)).code.toString();
         return string;
     }
 
@@ -548,7 +548,7 @@ public class DividendSummaryJDialog extends javax.swing.JDialog implements Prope
             for (int i = 0, ei = transactionSummaries.size(); i < ei && !isCancelled(); i++) {
                 
                 final TransactionSummary transactionSummary = transactionSummaries.get(i);
-                final Code code = ((Transaction)transactionSummary.getChildAt(0)).getStock().code;
+                final Code code = ((Transaction)transactionSummary.getChildAt(0)).getCode();
                 Dividend latestDividend = org.yccheok.jstock.portfolio.Utils.getLatestDividend(dividendSummary, code);                
 
                 final Duration duration;
@@ -602,8 +602,7 @@ public class DividendSummaryJDialog extends javax.swing.JDialog implements Prope
                             if (MainFrame.getInstance().getJStockOptions().isPenceToPoundConversionEnabled()) {
                                 total = total / 100.0;
                             }
-                            StockInfo betterStockInfo = MainFrame.getInstance().getStockInfoDatabase().codeToStockInfo(dividend.stockInfo.code);
-                            Dividend suggestedDividend = new Dividend(betterStockInfo == null ? dividend.stockInfo : betterStockInfo, total, dividend.date);
+                            Dividend suggestedDividend = new Dividend(dividend.code, total, dividend.date);
                             suggestedDividends.add(suggestedDividend);
                         }
                     }

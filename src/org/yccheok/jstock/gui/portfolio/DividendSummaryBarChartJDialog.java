@@ -87,35 +87,35 @@ public class DividendSummaryBarChartJDialog extends javax.swing.JDialog {
 
     private void initJComboBox() {
         final int size = dividendSummary.size();
-        Set<Code> codes = new HashSet<Code>();
+        Set<Code> codes2 = new HashSet<Code>();
         for (int i = size - 1; i >= 0; i--) {
             final Dividend dividend = dividendSummary.get(i);
-            final StockInfo stockInfo = dividend.stockInfo;      
+            final Code code = dividend.code;      
             // We do not perform duplication detection through stock info
             // comparison. This is because starting from version 1.0.6s, we enable
             // user to change buy transaction's stock symbol. Hence, user may
             // have dividend records with same stock code, but different stock
             // symbol. We will loop from backward, and take the first detected 
             // code.
-            if (false == codes.add(stockInfo.code)) {
+            if (false == codes2.add(code)) {
                 continue;
             }
 
-            stockInfos.add(stockInfo);
+            codes.add(code);
         }
 
         // Ensure symbols are in alphabetical order.
-        java.util.Collections.sort(stockInfos, new Comparator() {
+        java.util.Collections.sort(codes, new Comparator() {
 
             @Override
             public int compare(Object o1, Object o2) {
-                return ((StockInfo)o1).symbol.toString().compareTo(((StockInfo)o2).symbol.toString());
+                return ((Code)o1).toString().compareTo(((Code)o2).toString());
             }
 
         });
 
-        for (StockInfo stockInfo : stockInfos) {
-            this.jComboBox1.addItem(stockInfo.symbol.toString());
+        for (Code code : codes) {
+            this.jComboBox1.addItem(code.toString());
         }
     }
 
@@ -140,8 +140,8 @@ public class DividendSummaryBarChartJDialog extends javax.swing.JDialog {
             int selectedIndex = this.jComboBox1.getSelectedIndex();
             if (selectedIndex != 0) {
                 // selectedIndex - 1, as the first item in combo box is "All Stock(s)".
-                final Code code = this.stockInfos.get(selectedIndex - 1).code;
-                if (false == dividend.stockInfo.code.equals(code)) {
+                final Code code = this.codes.get(selectedIndex - 1);
+                if (false == dividend.code.equals(code)) {
                     continue;
                 }
             }
@@ -237,7 +237,7 @@ public class DividendSummaryBarChartJDialog extends javax.swing.JDialog {
         this.chartPanel.setChart(this.createBarChart(this.createDataset()));
     }//GEN-LAST:event_jComboBox1ActionPerformed
 
-    private final List<StockInfo> stockInfos = new ArrayList<StockInfo>();
+    private final List<Code> codes = new ArrayList<Code>();
     private final ChartPanel chartPanel;
     private final DividendSummary dividendSummary;
 

@@ -109,7 +109,7 @@ public class AutoDividendRowJPanel extends javax.swing.JPanel {
         double value = getAmount();
         net.sf.nachocalendar.components.DateField dateField = (net.sf.nachocalendar.components.DateField)jPanel1;
         final SimpleDate date = new SimpleDate((Date)dateField.getValue());
-        return new Dividend(dividend.stockInfo, value, date);
+        return new Dividend(dividend.code, value, date);
     }
     
     public double getAmount() {

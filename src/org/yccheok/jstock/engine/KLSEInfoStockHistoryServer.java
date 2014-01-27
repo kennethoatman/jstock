@@ -204,22 +204,6 @@ public class KLSEInfoStockHistoryServer implements StockHistoryServer {
             return false;
         }
 
-        Symbol symbol = Symbol.newInstance(code.toString());
-        String name = symbol.toString();
-        Stock.Board board = Stock.Board.Unknown;
-        Stock.Industry industry = Stock.Industry.Unknown;
-
-        try {
-            Stock stock = stockServer.getStock(code);
-            symbol = stock.symbol;
-            name = stock.getName();
-            board = stock.getBoard();
-            industry = stock.getIndustry();
-        }
-        catch (StockNotFoundException exp) {
-            log.error(null, exp);
-        }
-
         for (int i = length - 1; i > 0; i--)
         {
             // Use > instead of >=, to avoid header information (Date,Open,High,Low,Close,Volume,Adj Close)
@@ -264,10 +248,6 @@ public class KLSEInfoStockHistoryServer implements StockHistoryServer {
 
             Stock stock = new Stock(
                     code,
-                    symbol,
-                    name,
-                    board,
-                    industry,
                     prevPrice,
                     openPrice,
                     closePrice, /* Last Price. */

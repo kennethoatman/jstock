@@ -21,8 +21,6 @@ package org.yccheok.jstock.gui.portfolio;
 import javax.swing.table.AbstractTableModel;
 import org.yccheok.jstock.engine.Code;
 import org.yccheok.jstock.engine.SimpleDate;
-import org.yccheok.jstock.engine.StockInfo;
-import org.yccheok.jstock.engine.Symbol;
 import org.yccheok.jstock.file.CSVHelper;
 import org.yccheok.jstock.file.GUIBundleWrapper;
 import org.yccheok.jstock.file.GUIBundleWrapper.Language;
@@ -50,7 +48,7 @@ public class DividendSummaryTableModel extends AbstractTableModel implements Com
                 return dividend.date.getCalendar().getTime();
 
             case 1:
-                return dividend.stockInfo;
+                return dividend.code;
                 
             case 2:
                 return dividend.amount;
@@ -99,7 +97,7 @@ public class DividendSummaryTableModel extends AbstractTableModel implements Com
             }
 
             case 1: {
-                Dividend newDividend = dividendSummary.get(row).setStockInfo((StockInfo)value);
+                Dividend newDividend = dividendSummary.get(row).setCode((Code)value);
                 dividendSummary.remove(row);
                 dividendSummary.add(row, newDividend);
                 fireTableCellUpdated(row, col);
@@ -129,7 +127,7 @@ public class DividendSummaryTableModel extends AbstractTableModel implements Com
     }
     
     public int addNewDividend() {
-        return this.add(new Dividend(StockInfo.newInstance(Code.newInstance(""), Symbol.newInstance("")), 0.0, new SimpleDate()));
+        return this.add(new Dividend(Code.newInstance(""), 0.0, new SimpleDate()));
     }
 
     public Dividend getDividend(int index) {
@@ -145,7 +143,7 @@ public class DividendSummaryTableModel extends AbstractTableModel implements Com
     private static final String[] languageIndependentColumnNames;
     private static final Class[] columnClasses = {
         java.util.Date.class,
-        StockInfo.class,
+        Code.class,
         Double.class
     };
     private final DividendSummary dividendSummary;
@@ -169,5 +167,15 @@ public class DividendSummaryTableModel extends AbstractTableModel implements Com
     @Override
     public String getLanguageIndependentColumnName(int columnIndex) {
         return languageIndependentColumnNames[columnIndex];
+    }
+    
+    @Override
+    public int getMappedColumnCount() {
+        return columnNames.length;
+    }
+    
+    @Override
+    public int getMappedColumn(int i) {
+        return i;
     }
 }

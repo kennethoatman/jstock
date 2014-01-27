@@ -51,10 +51,11 @@ import org.jfree.data.time.TimeSeries;
 import org.jfree.data.time.TimeSeriesCollection;
 import org.jfree.data.xy.XYDataset;
 import org.yccheok.jstock.engine.Code;
+import org.yccheok.jstock.engine.Stock;
 import org.yccheok.jstock.engine.Observer;
 import org.yccheok.jstock.engine.RealTimeStockMonitor;
 import org.yccheok.jstock.engine.SimpleDate;
-import org.yccheok.jstock.engine.Stock;
+import org.yccheok.jstock.engine.Code;
 import org.yccheok.jstock.engine.StockInfo;
 import org.yccheok.jstock.gui.JStockOptions;
 import org.yccheok.jstock.gui.MainFrame;
@@ -305,22 +306,22 @@ public class InvestmentFlowChartJDialog extends javax.swing.JDialog implements O
 
                 if (type == Activity.Type.Buy) {
                     final double quantity = (Double)activity.get(Activity.Param.Quantity);
-                    final Stock stock = (Stock)activity.get(Activity.Param.Stock);
+                    final Code code = (Code)activity.get(Activity.Param.Code);
                     if (noCodeAddedToMonitor) {
                         // We might already have last price information in
                         // PortfolioManagementJPanel, we will still request
                         // stock monitor to provide continuous update.
-                        codesNeedToAddToRealTimeStockMonitor.add(stock.code);
+                        codesNeedToAddToRealTimeStockMonitor.add(code);
                         // If PortfolioManagementJPanel already has last price
                         // information, just get it from there.
-                        final double lastPrice = this.portfolioManagementJPanel.getStockPrice(stock);
+                        final double lastPrice = this.portfolioManagementJPanel.getStockPrice(code);
                         if (lastPrice != 0.0) {
-                            this.codeToPrice.put(stock.code, lastPrice);
+                            this.codeToPrice.put(code, lastPrice);
                         } else {
-                            this.lookUpCodes.add(stock.code);
+                            this.lookUpCodes.add(code);
                         }
                     }
-                    final Double price = this.codeToPrice.get(stock.code);
+                    final Double price = this.codeToPrice.get(code);
                     if (price != null) {
                         amount += convertToPoundIfNecessary((price * quantity));
                     }
@@ -443,33 +444,33 @@ public class InvestmentFlowChartJDialog extends javax.swing.JDialog implements O
         for (TransactionSummary transactionSummary : transactionSummaries) {
             for (int i = 0, count = transactionSummary.getChildCount(); i < count; i++) {
                 final Transaction transaction = (Transaction)transactionSummary.getChildAt(i);
-                StockInfo stockInfo = StockInfo.newInstance(transaction.getStock());
-                if (stockInfos.contains(stockInfo) == false) {
-                    stockInfos.add(stockInfo);
+                final Code code = transaction.getCode();
+                if (codes.contains(code) == false) {
+                    codes.add(code);
                 }
             }
         }
 
         for (int i = 0, size = dividendSummary.size(); i < size; i++) {
             final Dividend dividend = dividendSummary.get(i);
-            final StockInfo stockInfo = dividend.stockInfo;
-            if (stockInfos.contains(stockInfo) == false) {
-                stockInfos.add(stockInfo);
+            final Code code = dividend.code;
+            if (codes.contains(code) == false) {
+                codes.add(code);
             }
         }
 
         // Ensure symbols are in alphabetical order.
-        java.util.Collections.sort(stockInfos, new Comparator() {
+        java.util.Collections.sort(codes, new Comparator() {
 
             @Override
             public int compare(Object o1, Object o2) {
-                return ((StockInfo)o1).symbol.toString().compareTo(((StockInfo)o2).symbol.toString());
+                return ((Code)o1).toString().compareTo(((Code)o2).toString());
             }
 
         });
 
-        for (StockInfo stockInfo : stockInfos) {
-            this.jComboBox1.addItem(stockInfo.symbol.toString());
+        for (Code code : codes) {
+            this.jComboBox1.addItem(code.toString());
         }
     }
 
@@ -489,8 +490,8 @@ public class InvestmentFlowChartJDialog extends javax.swing.JDialog implements O
                 final Transaction transaction = (Transaction)transactionSummary.getChildAt(i);
                 if (selectedIndex != 0) {
                     // selectedIndex - 1, as the first item in combo box is "All Stock(s)".
-                    final Code code = this.stockInfos.get(selectedIndex - 1).code;
-                    if (false == transaction.getStock().code.equals(code)) {
+                    final Code code = this.codes.get(selectedIndex - 1);
+                    if (false == transaction.getCode().equals(code)) {
                         continue;
                     }
                 }
@@ -498,7 +499,7 @@ public class InvestmentFlowChartJDialog extends javax.swing.JDialog implements O
                 if (type == Contract.Type.Buy) {
                     final Activity activity = new Activity.Builder(Activity.Type.Buy, 
                             isFeeCalculationEnabled ? transaction.getNetTotal() : transaction.getTotal()).
-                            put(Activity.Param.Stock, transaction.getStock()).
+                            put(Activity.Param.Code, transaction.getCode()).
                             put(Activity.Param.Quantity, transaction.getQuantity()).
                             build();
                     this.ROISummary.add(transaction.getDate(), activity);
@@ -506,13 +507,13 @@ public class InvestmentFlowChartJDialog extends javax.swing.JDialog implements O
                 } else if (type == Contract.Type.Sell) {
                     final Activity activity0 = new Activity.Builder(Activity.Type.Buy, 
                             isFeeCalculationEnabled ? transaction.getNetReferenceTotal() : transaction.getReferenceTotal()).
-                            put(Activity.Param.Stock, transaction.getStock()).
+                            put(Activity.Param.Code, transaction.getCode()).
                             put(Activity.Param.Quantity, transaction.getQuantity()).
                             build();
                     this.investSummary.add(transaction.getReferenceDate(), activity0);
                     final Activity activity1 = new Activity.Builder(Activity.Type.Sell, 
                             isFeeCalculationEnabled ? transaction.getNetTotal() : transaction.getTotal()).
-                            put(Activity.Param.Stock, transaction.getStock()).
+                            put(Activity.Param.Code, transaction.getCode()).
                             put(Activity.Param.Quantity, transaction.getQuantity()).
                             build();
                     this.ROISummary.add(transaction.getDate(), activity1);
@@ -527,14 +528,14 @@ public class InvestmentFlowChartJDialog extends javax.swing.JDialog implements O
 
             if (selectedIndex != 0) {
                 // selectedIndex - 1, as the first item in combo box is "All Stock(s)".
-                final Code code = this.stockInfos.get(selectedIndex - 1).code;
-                if (false == dividend.stockInfo.code.equals(code)) {
+                final Code code = this.codes.get(selectedIndex - 1);
+                if (false == dividend.code.equals(code)) {
                     continue;
                 }
             }
 
             final Activity activity = new Activity.Builder(Activity.Type.Dividend, dividend.amount).
-                    put(Activity.Param.StockInfo, dividend.stockInfo).build();
+                    put(Activity.Param.Code, dividend.code).build();
             this.ROISummary.add(dividend.date, activity);
         }
     }
@@ -639,7 +640,7 @@ public class InvestmentFlowChartJDialog extends javax.swing.JDialog implements O
         return new javax.swing.DefaultComboBoxModel(new String[] { GUIBundle.getString("InvestmentFlowChartJDialog_AllStock(s)") });
     }
 
-    private final List<StockInfo> stockInfos = new ArrayList<StockInfo>();
+    private final List<Code> codes = new ArrayList<Code>();
 
     /* How much I had invested. */
     /* Contains Buy, Sell. When Sell, it will pull down your investment value. */

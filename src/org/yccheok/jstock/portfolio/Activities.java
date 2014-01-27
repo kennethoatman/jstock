@@ -25,7 +25,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.yccheok.jstock.engine.SimpleDate;
-import org.yccheok.jstock.engine.Stock;
+import org.yccheok.jstock.engine.Code;
 
 /**
  *
@@ -75,8 +75,8 @@ public class Activities {
         Map<String, Double> datas = new HashMap<String, Double>();
 
         for (Activity activity : activities) {
-            final Stock stock = (Stock)activity.get(Activity.Param.Stock);
-            String key = (stock != null ? stock.symbol.toString() : "") + activity.getType();
+            final Code code = (Code)activity.get(Activity.Param.Code);
+            String key = (code != null ? code.toString() : "") + activity.getType();
             Double d = datas.get(key);
             if (d != null) {
                 double total = d.doubleValue() + activity.getAmount();
@@ -92,8 +92,8 @@ public class Activities {
         final int size = activities.size();
         for (Activity activity : activities) {
             count++;
-            final Stock stock = (Stock)activity.get(Activity.Param.Stock);
-            final String who = stock != null ? stock.symbol.toString() : "";
+            final Code code = (Code)activity.get(Activity.Param.Code);
+            final String who = code != null ? code.toString() : "";
             final Activity.Type type = activity.getType();
             String key = who + type;
             Double d = datas.get(key);

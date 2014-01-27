@@ -20,40 +20,40 @@
 package org.yccheok.jstock.portfolio;
 
 import org.yccheok.jstock.engine.SimpleDate;
-import org.yccheok.jstock.engine.StockInfo;
+import org.yccheok.jstock.engine.Code;
 
 /**
  *
  * @author yccheok
  */
 public class Dividend implements Commentable {
-    public Dividend(StockInfo stockInfo, double amount, SimpleDate date) {
-        this.stockInfo = stockInfo;
+    public Dividend(Code code, double amount, SimpleDate date) {
+        this.code = code;
         this.amount = amount;
         this.date = date;
     }
 
     public Dividend(Dividend dividend) {
-        this.stockInfo = dividend.stockInfo;
+        this.code = dividend.code;
         this.amount = dividend.amount;
         this.date = dividend.date;
         this.comment = dividend.comment;
     }
 
-    public Dividend setStockInfo(StockInfo stockInfo) {
-        Dividend dividend = new Dividend(stockInfo, this.amount, this.date);
+    public Dividend setCode(Code code) {
+        Dividend dividend = new Dividend(code, this.amount, this.date);
         dividend.setComment(this.comment);
         return dividend;
     }
 
     public Dividend setAmount(double amount) {
-        Dividend dividend = new Dividend(this.stockInfo, amount, this.date);
+        Dividend dividend = new Dividend(this.code, amount, this.date);
         dividend.setComment(this.comment);
         return dividend;
     }
 
     public Dividend setDate(SimpleDate date) {
-        Dividend dividend = new Dividend(this.stockInfo, this.amount, date);
+        Dividend dividend = new Dividend(this.code, this.amount, date);
         dividend.setComment(this.comment);
         return dividend;
     }
@@ -68,7 +68,7 @@ public class Dividend implements Commentable {
         return this.comment;
     }
 
-    public final StockInfo stockInfo;
+    public final Code code;
     public final double amount;
     public final SimpleDate date;
     private String comment = "";

@@ -480,9 +480,9 @@ public class LoadFromCloudJDialog extends javax.swing.JDialog {
                     status = status & org.yccheok.jstock.watchlist.Utils.migrateXMLToCSVWatchlists(Utils.getUserDataDirectory(), Utils.getUserDataDirectory());
                 }
                     
-                if (Utils.isDatabaseFilesInXML(cloudFile.version)) {
-                    status = status & org.yccheok.jstock.engine.Utils.migrateXMLToCSVDatabases(Utils.getUserDataDirectory(), Utils.getUserDataDirectory());
-                }
+//                if (Utils.isDatabaseFilesInXML(cloudFile.version)) {
+//                    status = status & org.yccheok.jstock.engine.Utils.migrateXMLToCSVDatabases(Utils.getUserDataDirectory(), Utils.getUserDataDirectory());
+//                }
                 
                 // Place isCancelled check after time consuming operation.
                 // Not the best way, but perhaps the easiest way to cancel

@@ -188,9 +188,9 @@ public class SplitJDialog extends javax.swing.JDialog {
 
     private void updateGUI() {
         if (jComboBox1.getSelectedItem().equals(GUIBundle.getString("SplitJDialog_Split"))) {
-            String title = MessageFormat.format(GUIBundle.getString("SplitJDialog_Split_template"), stockInfo.symbol);
+            String title = MessageFormat.format(GUIBundle.getString("SplitJDialog_Split_template"), stockInfo.code);
             this.setTitle(title);
-            String message = MessageFormat.format(GUIBundle.getString("SplitJDialog_UnitTo_template"), stockInfo.symbol);
+            String message = MessageFormat.format(GUIBundle.getString("SplitJDialog_UnitTo_template"), stockInfo.code);
             jLabel1.setText(message);
             jFormattedTextField1.setEditable(false);
             jFormattedTextField2.setEditable(true);
@@ -198,9 +198,9 @@ public class SplitJDialog extends javax.swing.JDialog {
             jFormattedTextField2.setValue(new Double(1.0));
         } else {
             assert(jComboBox1.getSelectedItem().equals(GUIBundle.getString("SplitJDialog_Merge")));
-            String title = MessageFormat.format(GUIBundle.getString("SplitJDialog_Merge_template"), stockInfo.symbol);
+            String title = MessageFormat.format(GUIBundle.getString("SplitJDialog_Merge_template"), stockInfo.code);
             this.setTitle(title);
-            String message = MessageFormat.format(GUIBundle.getString("SplitJDialog_UnitTo_template"), stockInfo.symbol);
+            String message = MessageFormat.format(GUIBundle.getString("SplitJDialog_UnitTo_template"), stockInfo.code);
             jLabel1.setText(message);
             jFormattedTextField1.setEditable(true);
             jFormattedTextField2.setEditable(false);

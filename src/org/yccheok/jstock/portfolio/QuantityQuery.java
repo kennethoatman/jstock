@@ -75,7 +75,7 @@ public class QuantityQuery {
     
     public QuantityQuery(List<TransactionSummary> transactionSummaries) {
         for (TransactionSummary transactionSummary : transactionSummaries) {
-            final Code code = ((Transaction)transactionSummary.getChildAt(0)).getStock().code;
+            final Code code = ((Transaction)transactionSummary.getChildAt(0)).getCode();
             final int count = transactionSummary.getChildCount();
             final List<Balance> tmps = new ArrayList<Balance>();
 

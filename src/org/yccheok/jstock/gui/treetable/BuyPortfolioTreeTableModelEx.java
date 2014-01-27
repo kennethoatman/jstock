@@ -117,7 +117,7 @@ public class BuyPortfolioTreeTableModelEx extends AbstractPortfolioTreeTableMode
 
             final Transaction transaction = (Transaction)transactionSummary.getChildAt(0);
 
-            if (true == transaction.getStock().code.equals(stockInfo.code)) {
+            if (true == transaction.getCode().equals(stockInfo.code)) {
                 break;
             }
         }
@@ -155,7 +155,7 @@ public class BuyPortfolioTreeTableModelEx extends AbstractPortfolioTreeTableMode
             
             final Transaction transaction = (Transaction)ts.getChildAt(0);
             
-            if (true == transaction.getStock().code.equals(code)) {
+            if (true == transaction.getCode().equals(code)) {
                 transactionSummary = ts;
                 break;
             }
@@ -201,7 +201,7 @@ public class BuyPortfolioTreeTableModelEx extends AbstractPortfolioTreeTableMode
     }
     
     public double getCurrentValue(Transaction transaction) {
-        final Code code = transaction.getStock().code;
+        final Code code = transaction.getCode();
         final Double price = this.stockPrice.get(code);
 
         if (price == null) return 0.0;
@@ -212,7 +212,7 @@ public class BuyPortfolioTreeTableModelEx extends AbstractPortfolioTreeTableMode
     public double getCurrentValue(TransactionSummary transactionSummary) {
         final Transaction transaction = (Transaction)transactionSummary.getChildAt(0);
         
-        final Code code = transaction.getStock().code;
+        final Code code = transaction.getCode();
         
         final Double price = this.stockPrice.get(code);
 
@@ -222,7 +222,7 @@ public class BuyPortfolioTreeTableModelEx extends AbstractPortfolioTreeTableMode
     }
     
     public double getCurrentPrice(Transaction transaction) {
-        final Code code = transaction.getStock().code;
+        final Code code = transaction.getCode();
         
         final Double price = this.stockPrice.get(code);
 
@@ -234,7 +234,7 @@ public class BuyPortfolioTreeTableModelEx extends AbstractPortfolioTreeTableMode
     public double getCurrentPrice(TransactionSummary transactionSummary) {
         final Transaction transaction = (Transaction)transactionSummary.getChildAt(0);
         
-        final Code code = transaction.getStock().code;
+        final Code code = transaction.getCode();
 
         final Double price = this.stockPrice.get(code);
 
@@ -465,7 +465,7 @@ public class BuyPortfolioTreeTableModelEx extends AbstractPortfolioTreeTableMode
             
             switch(column) {
                 case 0:
-                    return ((Transaction)transactionSummary.getChildAt(0)).getStock().symbol;
+                    return ((Transaction)transactionSummary.getChildAt(0)).getCode();
                     
                 case 2:
                     return transactionSummary.getQuantity();
@@ -543,7 +543,7 @@ public class BuyPortfolioTreeTableModelEx extends AbstractPortfolioTreeTableMode
             
             switch(column) {
                 case 0:
-                    return (transaction).getStock().symbol;
+                    return (transaction).getCode();
 
                 case 1:
                     return transaction.getDate();
@@ -647,7 +647,7 @@ public class BuyPortfolioTreeTableModelEx extends AbstractPortfolioTreeTableMode
 
             final Transaction transaction = (Transaction)transactionSummary.getChildAt(0);
 
-            set.add(transaction.getStock().code);
+            set.add(transaction.getCode());
         }
 
         // http://stackoverflow.com/questions/1884889/iterating-over-and-removing-from-a-map

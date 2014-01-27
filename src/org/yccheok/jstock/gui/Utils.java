@@ -916,22 +916,17 @@ public class Utils {
      * @return empty stock based on given stock info
      */
     public static Stock getEmptyStock(StockInfo stockInfo) {
-        return getEmptyStock(stockInfo.code, stockInfo.symbol);
+        return getEmptyStock(stockInfo.code);
     }
 
     /**
-     * Returns empty stock based on given code and symbol.
+     * Returns empty stock based on given code.
      *
      * @param code the code
-     * @param symbol the symbol
-     * @return empty stock based on given code and symbol
+     * @return empty stock based on given code 
      */
-    public static Stock getEmptyStock(Code code, Symbol symbol) {
+    public static Stock getEmptyStock(Code code) {
         return new Stock(   code,
-                            symbol,
-                            "",
-                            Stock.Board.Unknown,
-                            Stock.Industry.Unknown,
                             0.0,
                             0.0,
                             0.0,
